@@ -3,6 +3,11 @@ import {
   ArrowLeftRight,
   Bell,
   CalendarClock,
+  CalendarDays,
+  CheckSquare,
+  NotebookPen,
+  Sun,
+  Users,
   Coins,
   FileText,
   HandCoins,
@@ -38,7 +43,20 @@ export interface NavSection {
  */
 export const NAV: NavSection[] = [
   {
-    items: [{ to: '/', label: 'nav.dashboard', icon: LayoutDashboard, end: true }],
+    items: [
+      { to: '/today', label: 'nav.today', icon: Sun },
+      { to: '/', label: 'nav.dashboard', icon: LayoutDashboard, end: true },
+    ],
+  },
+  {
+    label: 'nav.sectionPlan',
+    items: [
+      { to: '/tasks', label: 'nav.tasks', icon: CheckSquare },
+      { to: '/calendar', label: 'nav.calendar', icon: CalendarDays },
+      { to: '/goals', label: 'nav.goalsOkr', icon: Target },
+      { to: '/notes', label: 'nav.notes', icon: NotebookPen },
+      { to: '/people', label: 'nav.people', icon: Users },
+    ],
   },
   {
     label: 'nav.sectionMoney',
@@ -73,8 +91,8 @@ export const NAV: NavSection[] = [
 /** Bottom bar on phones: 2 items, the + button, 1 item + More. */
 export const MOBILE_TABS: { left: NavItem[]; right: NavItem[] } = {
   left: [
-    { to: '/', label: 'nav.home', icon: LayoutDashboard, end: true },
-    { to: '/finance', label: 'nav.money', icon: Target },
+    { to: '/today', label: 'nav.today', icon: Sun },
+    { to: '/finance', label: 'nav.money', icon: Wallet },
   ],
-  right: [{ to: '/finance/transactions', label: 'nav.transactions', icon: ArrowLeftRight }],
+  right: [{ to: '/tasks', label: 'nav.tasks', icon: CheckSquare }],
 };

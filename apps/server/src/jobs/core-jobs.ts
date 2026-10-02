@@ -2,7 +2,7 @@ import { readdirSync, rmSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { and, desc, eq, inArray, isNotNull, isNull, lte } from 'drizzle-orm';
 import { getDb } from '../db/client';
-import { backups, documents } from '../db/schema';
+import { backups, documents, idempotencyKeys } from '../db/schema';
 import { hasUsers, purgeExpiredSessions } from '../modules/auth/service';
 import { createBackup } from '../modules/backup/service';
 import { notify } from '../modules/notifications/service';
@@ -63,6 +63,10 @@ registerJob({
   everyMs: 6 * 3_600_000,
   run() {
     purgeExpiredSessions();
+    getDb()
+      .delete(idempotencyKeys)
+      .where(lte(idempotencyKeys.createdAt, new Date(Date.now() - 7 * 86_400_000).toISOString()))
+      .run();
     // Remove abandoned temporary files (failed uploads, interrupted restores) older than a day.
     const tmp = getConfig().paths.tmp;
     for (const f of readdirSync(tmp)) {

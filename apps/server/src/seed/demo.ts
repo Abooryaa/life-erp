@@ -17,6 +17,11 @@ import { saveSettings } from '../modules/settings/service';
 import { createTag } from '../modules/tags/service';
 import { createWorkspace } from '../modules/workspaces/service';
 import { getConfig } from '../runtime';
+import { createEvent } from '../modules/life/events';
+import { addCheckin, createGoal as createLifeGoal } from '../modules/life/goals';
+import { createNote } from '../modules/life/notes';
+import { addInteraction, createPerson } from '../modules/life/people';
+import { createTask, updateTask } from '../modules/life/tasks';
 
 /**
  * Demo data lives ONLY in the separate demo data folder (LifeERP-Demo), so it can
@@ -49,7 +54,61 @@ export async function seedDemo() {
   });
   for (const name of ['urgent', 'followup', 'finance', 'career', 'mma', 'basira', '2026']) createTag(ctx, { name });
   seedFinance(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
+  seedLife(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
   return { userId, personal, mma, basira };
+}
+
+function seedLife(ctx: { userId: string }, ws: { personal: string; mma: string; basira: string }) {
+  const today = todayLocal();
+  // People
+  const karim = createPerson(ctx, { fullName: 'Eng. Karim Hassan', relationship: 'contractor', company: 'Hassan Electric', role: 'Electrical contractor', phone: '01001234567', workspaceId: ws.mma, nextFollowUp: today, followUpNote: 'Confirm electrical BOQ for the villa' });
+  addInteraction(ctx, { personId: karim.id, kind: 'whatsapp', date: addDays(today, -3), summary: 'Sent villa drawings; he will price the electrical work.' });
+  const nour = createPerson(ctx, { fullName: 'Nour El-Sayed', relationship: 'client', company: 'Villa – New Cairo', phone: '01112223334', email: 'nour@example.com', workspaceId: ws.mma, source: 'Instagram' });
+  addInteraction(ctx, { personId: nour.id, kind: 'meeting', date: addDays(today, -6), summary: 'Site visit. Wants modern style, budget around 1.2M EGP.', nextFollowUp: addDays(today, 2) });
+  createPerson(ctx, { fullName: 'Omar Fathy', relationship: 'professional', company: 'Garment factory – 10th of Ramadan', role: 'Operations manager', workspaceId: ws.basira, nextFollowUp: addDays(today, 5), followUpNote: 'Demo of Basira data health check' });
+  createPerson(ctx, { fullName: 'Mona (sister)', relationship: 'family', birthday: `1996-${addDays(today, 4).slice(5)}` });
+  createPerson(ctx, { fullName: 'Sara Ibrahim', relationship: 'recruiter', company: 'Talent Partners', email: 'sara@example.com' });
+
+  // Goals hierarchy
+  const vision = createLifeGoal(ctx, { title: 'Build two profitable businesses by 2028', level: 'vision', metric: 'children', area: 'business' });
+  const mmaGoal = createLifeGoal(ctx, { title: 'MMA Spaces: 12 completed projects this year', level: 'long_term', parentId: vision.id, metric: 'numeric', startValue: 0, targetValue: 12, unit: 'projects', startDate: `${today.slice(0, 4)}-01-01`, deadline: `${today.slice(0, 4)}-12-31`, workspaceId: ws.mma });
+  addCheckin(ctx, mmaGoal.id, { date: addDays(today, -20), value: 6 });
+  const basiraGoal = createLifeGoal(ctx, { title: 'Launch Basira MVP with 3 pilot factories', level: 'objective', parentId: vision.id, metric: 'tasks', deadline: addMonths(today, 3), workspaceId: ws.basira });
+  const fitness = createLifeGoal(ctx, { title: 'Reach 80 kg', level: 'objective', metric: 'numeric', startValue: 92, targetValue: 80, unit: 'kg', startDate: addMonths(today, -2), deadline: addMonths(today, 4), area: 'health' });
+  addCheckin(ctx, fitness.id, { date: addDays(today, -30), value: 90 });
+  addCheckin(ctx, fitness.id, { date: addDays(today, -2), value: 88.5 });
+
+  // Tasks
+  const task = (title: string, extra: Record<string, unknown> = {}) => createTask(ctx, { title, ...extra } as never);
+  task('Pay electricity bill', { dueDate: today, priority: 2, area: 'finance', tags: ['finance'] });
+  task('Send revised proposal to Nour', { dueDate: addDays(today, -1), priority: 1, personId: nour.id, workspaceId: ws.mma, tags: ['mma', 'followup'] });
+  task('Order gypsum boards for villa', { dueDate: addDays(today, 1), workspaceId: ws.mma });
+  task('Build data validation step', { status: 'in_progress', goalId: basiraGoal.id, workspaceId: ws.basira, tags: ['basira'] });
+  task('Design health-check report', { status: 'planned', goalId: basiraGoal.id, workspaceId: ws.basira });
+  const done = task('Interview 3 pilot factories', { status: 'planned', goalId: basiraGoal.id, workspaceId: ws.basira });
+  updateTask(ctx, done.id, { status: 'done' });
+  task('Weekly review', { dueDate: nextWeekday(today, 6), recurrence: 'weekly', area: 'personal' });
+  task('Renew car license', { dueDate: addDays(today, 12), area: 'personal' });
+  task('Read “Data-Driven Business”', { status: 'planned', area: 'learning' });
+  task('Idea: Instagram reels of finished projects', { tags: ['mma'] });
+  task('Waiting for Karim’s BOQ', { status: 'waiting', personId: karim.id, workspaceId: ws.mma });
+
+  // Events
+  createEvent(ctx, { title: 'Site visit – Villa New Cairo', kind: 'meeting', date: today, startTime: '11:00', endTime: '12:30', location: 'New Cairo, 5th Settlement', personId: nour.id, workspaceId: ws.mma, reminderMinutes: 60 });
+  createEvent(ctx, { title: 'Gym', kind: 'personal', date: today, startTime: '19:00', endTime: '20:00', recurrence: 'weekly', reminderMinutes: 30 });
+  createEvent(ctx, { title: 'Basira demo with Omar', kind: 'meeting', date: addDays(today, 5), startTime: '13:00', endTime: '14:00', workspaceId: ws.basira, reminderMinutes: 120 });
+  createEvent(ctx, { title: 'Family dinner', kind: 'personal', date: addDays(today, 1), startTime: '20:00' });
+  createEvent(ctx, { title: 'Furniture & design expo', kind: 'other', date: addDays(today, 9), endDate: addDays(today, 11), allDay: true, workspaceId: ws.mma });
+
+  // Notes
+  createNote(ctx, { title: 'Basira workflow', body: '## Pipeline\n1. Data input\n2. Validation\n3. Health check → approval\n4. Data cleaning → approval\n5. Dashboard\n6. Forecasting / analysis\n\nPricing ideas: see [[Basira pricing]].', workspaceId: ws.basira, pinned: true, tags: ['basira'] });
+  createNote(ctx, { title: 'Basira pricing', body: '- Pilot: free for 3 months\n- Per-factory monthly subscription\n- Setup fee for data onboarding\n\nRelated: [[Basira workflow]]', workspaceId: ws.basira });
+  createNote(ctx, { title: 'MMA – standard BOQ checklist', body: '- [ ] Demolition\n- [ ] Electrical\n- [ ] Plumbing\n- [ ] Gypsum & ceilings\n- [ ] Paint\n- [ ] Flooring\n- [ ] Carpentry\n\n> Always confirm quantities on site.', workspaceId: ws.mma, tags: ['mma'] });
+}
+
+function nextWeekday(from: string, weekday: number) {
+  const dow = new Date(`${from}T12:00:00Z`).getUTCDay();
+  return addDays(from, ((weekday - dow + 7) % 7) || 7);
 }
 
 function seedFinance(ctx: { userId: string }, ws: { personal: string; mma: string; basira: string }) {

@@ -28,6 +28,12 @@ import { DebtsPage } from './features/finance/DebtsPage';
 import { GoalDetailPage, GoalsPage } from './features/finance/GoalsPage';
 import { CategoriesPage } from './features/finance/CategoriesPage';
 import { CurrenciesPage } from './features/finance/CurrenciesPage';
+import { TodayPage } from './features/life/TodayPage';
+import { TasksPage } from './features/life/TasksPage';
+import { CalendarPage } from './features/life/CalendarPage';
+import { GoalDetailOkrPage, GoalsOkrPage } from './features/life/GoalsOkrPage';
+import { NotesPage } from './features/life/NotesPage';
+import { PeoplePage, PersonDetailPage } from './features/life/PeoplePage';
 
 const DEFAULT_FORMAT: Omit<FormatOptions, 'locale'> = {
   digits: 'latn',
@@ -82,6 +88,15 @@ function Private() {
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="workspaces/:id" element={<WorkspacePage />} />
               <Route path="settings/*" element={<SettingsPage />} />
+              <Route path="today" element={<TodayPage />} />
+              <Route path="tasks" element={<TasksPage />} />
+              <Route path="calendar" element={<CalendarPage />} />
+              <Route path="goals" element={<GoalsOkrPage />} />
+              <Route path="goals/:id" element={<GoalDetailOkrPage />} />
+              <Route path="notes" element={<NotesPage />} />
+              <Route path="notes/:id" element={<NotesPage />} />
+              <Route path="people" element={<PeoplePage />} />
+              <Route path="people/:id" element={<PersonDetailPage />} />
               <Route path="finance" element={<FinanceOverviewPage />} />
               <Route path="finance/transactions" element={<TransactionsPage />} />
               <Route path="finance/accounts" element={<AccountsPage />} />

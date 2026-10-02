@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { BrandMark, BrandName } from '../components/Brand';
 import { Button } from '../components/ui/button';
-import { Dot } from '../components/ui/feedback';
+import { Dot, useToast } from '../components/ui/feedback';
+import { flushOutbox, useOutboxSync } from '../lib/outbox';
 import { useI18n } from '../i18n';
 import { api } from '../lib/api';
 import { useAuthStatus } from '../lib/hooks';
@@ -69,12 +70,36 @@ function Shell() {
           <div className="bg-warn px-4 py-1.5 text-center text-[12.5px] font-medium text-white">{t('app.demoBanner')}</div>
         )}
         <TopBar onMenu={() => setDrawer(true)} />
+        <OutboxBanner />
         <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 pt-4 pb-28 md:px-8 md:pt-6 md:pb-12">
           <Outlet />
         </main>
       </div>
 
       <MobileTabBar onMore={() => setDrawer(true)} />
+    </div>
+  );
+}
+
+/** Shows items saved on this device while the laptop was unreachable, and syncs them. */
+function OutboxBanner() {
+  const { t } = useI18n();
+  const qc = useQueryClient();
+  const toast = useToast();
+  const items = useOutboxSync((r) => {
+    if (r.sent) {
+      toast.success(t('outbox.synced', { n: r.sent }));
+      void qc.invalidateQueries();
+    }
+    for (const x of r.rejected) toast.error(`${x.item.label}: ${x.message}`);
+  });
+  if (!items.length) return null;
+  return (
+    <div className="flex items-center justify-center gap-3 bg-info-soft px-4 py-1.5 text-[12.5px] text-info">
+      <span>{t('outbox.pending', { n: items.length })}</span>
+      <button className="font-semibold underline" onClick={() => void flushOutbox().then(() => qc.invalidateQueries())}>
+        {t('outbox.retry')}
+      </button>
     </div>
   );
 }

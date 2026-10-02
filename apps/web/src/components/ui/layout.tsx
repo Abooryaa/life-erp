@@ -38,11 +38,11 @@ export function Panel({
   padded?: boolean;
 }) {
   return (
-    <section className={clsx('rounded-card border border-line bg-surface shadow-card', className)}>
+    <section className={clsx('min-w-0 rounded-card border border-line bg-surface shadow-card', className)}>
       {(title || actions) && (
-        <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
-          <h2 className="text-[14px] font-semibold">{title}</h2>
-          {actions && <div className="flex items-center gap-1">{actions}</div>}
+        <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3">
+          <h2 className="min-w-0 text-[14px] font-semibold">{title}</h2>
+          {actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
         </header>
       )}
       <div className={padded ? 'p-4' : undefined}>{children}</div>

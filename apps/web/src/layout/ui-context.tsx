@@ -2,6 +2,9 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import { UploadDocumentModal } from '../features/documents/UploadDocumentModal';
 import type { Tx } from '../features/finance/fin-lib';
 import { TransactionFormModal, type TxMode } from '../features/finance/TransactionForm';
+import { EventFormModal } from '../features/life/EventForm';
+import { PersonFormModal } from '../features/life/PeoplePage';
+import { QuickCaptureModal, TaskFormModal, type TaskDefaults } from '../features/life/TaskForm';
 import { WorkspaceFormModal } from '../features/workspaces/WorkspaceFormModal';
 import type { Workspace } from '../lib/types';
 import { CommandPalette } from './CommandPalette';
@@ -19,6 +22,10 @@ interface UiCtx {
   openUpload(attachTo?: AttachTarget): void;
   openWorkspaceForm(ws?: Workspace): void;
   openTransaction(mode?: TxMode, editing?: Tx | null, defaults?: { accountId?: string; categoryId?: string }): void;
+  openTask(opts?: { id?: string; defaults?: TaskDefaults }): void;
+  openQuickCapture(): void;
+  openEvent(opts?: { id?: string; date?: string }): void;
+  openPerson(): void;
 }
 
 const Ctx = createContext<UiCtx | null>(null);
@@ -33,6 +40,10 @@ export function UiProvider({ children }: { children: ReactNode }) {
     open: false,
     mode: 'expense',
   });
+  const [task, setTask] = useState<{ open: boolean; id?: string; defaults?: TaskDefaults }>({ open: false });
+  const [capture, setCapture] = useState(false);
+  const [event, setEvent] = useState<{ open: boolean; id?: string; date?: string }>({ open: false });
+  const [person, setPerson] = useState(false);
 
   const value: UiCtx = {
     openQuickAdd: () => setQuick(true),
@@ -40,6 +51,10 @@ export function UiProvider({ children }: { children: ReactNode }) {
     openUpload: (attachTo) => setUpload({ open: true, attachTo }),
     openWorkspaceForm: (ws) => setWsForm({ open: true, ws }),
     openTransaction: (mode = 'expense', editing = null, defaults) => setTxForm({ open: true, mode, editing, defaults }),
+    openTask: (opts = {}) => setTask({ open: true, id: opts.id, defaults: opts.defaults }),
+    openQuickCapture: () => setCapture(true),
+    openEvent: (opts = {}) => setEvent({ open: true, id: opts.id, date: opts.date }),
+    openPerson: () => setPerson(true),
   };
 
   return (
@@ -56,6 +71,10 @@ export function UiProvider({ children }: { children: ReactNode }) {
         defaults={txForm.defaults}
         onOpenChange={(o) => setTxForm((s) => ({ ...s, open: o }))}
       />
+      <TaskFormModal open={task.open} taskId={task.id} defaults={task.defaults} onOpenChange={(o) => setTask((s) => ({ ...s, open: o }))} />
+      <QuickCaptureModal open={capture} onOpenChange={setCapture} onMore={() => setTask({ open: true })} />
+      <EventFormModal open={event.open} eventId={event.id} defaultDate={event.date} onOpenChange={(o) => setEvent((s) => ({ ...s, open: o }))} />
+      <PersonFormModal open={person} onOpenChange={setPerson} />
     </Ctx.Provider>
   );
 }

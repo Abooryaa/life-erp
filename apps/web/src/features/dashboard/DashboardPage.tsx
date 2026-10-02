@@ -66,6 +66,7 @@ export function DashboardPage() {
         <BackupStatus />
       </div>
 
+      <TodaySnapshot />
       <MoneySummary />
 
       <div className="grid gap-5 lg:grid-cols-3">
@@ -138,6 +139,46 @@ export function DashboardPage() {
         </ul>
       </Panel>
     </div>
+  );
+}
+
+interface TodaySummary {
+  counts: { inbox: number; today: number; overdue: number; upcoming: number; waiting: number };
+  events: { id: string; title: string; startTime: string | null; allDay: boolean }[];
+  followUps: { id: string }[];
+  focusGoals: { id: string }[];
+}
+
+/** Tasks, schedule, follow-ups and goals needing attention — links into the Today screen. */
+function TodaySnapshot() {
+  const { t } = useI18n();
+  const { currentId } = useWorkspace();
+  const { data } = useQuery({ queryKey: ['today', currentId], queryFn: () => api.get<TodaySummary>(`/api/today${qs({ workspaceId: currentId })}`) });
+  if (!data) return null;
+  const cell = (label: string, value: number, to: string, tone?: string) => (
+    <Link to={to} className="rounded-lg p-2 hover:bg-surface-2">
+      <p className="text-[12.5px] text-ink-3">{label}</p>
+      <p className={`num text-[20px] font-semibold ${value && tone ? tone : ''}`}>{value}</p>
+    </Link>
+  );
+  return (
+    <Panel
+      title={t('today.title')}
+      actions={
+        <Link to="/today" className="text-[13px] font-medium text-accent hover:underline">
+          {t('common.open')}
+        </Link>
+      }
+    >
+      <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
+        {cell(t('today.overdue'), data.counts.overdue, '/tasks?view=today', 'text-neg')}
+        {cell(t('today.dueToday'), data.counts.today, '/tasks?view=today')}
+        {cell(t('task.view.inbox'), data.counts.inbox, '/tasks?view=inbox')}
+        {cell(t('today.events'), data.events.length, '/calendar')}
+        {cell(t('today.followUps'), data.followUps.length, '/people?followUp=1', 'text-warn')}
+        {cell(t('today.focus'), data.focusGoals.length, '/goals', 'text-warn')}
+      </div>
+    </Panel>
   );
 }
 

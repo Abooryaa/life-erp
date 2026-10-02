@@ -8,6 +8,7 @@ import { useToast } from '../../components/ui/feedback';
 import { Field, FormError, Input, Select, Textarea } from '../../components/ui/form';
 import { useI18n, type MessageKey } from '../../i18n';
 import { api, ApiError } from '../../lib/api';
+import { postOrQueue } from '../../lib/outbox';
 import { useFormState } from '../../lib/hooks';
 import { useWorkspace } from '../../lib/workspace';
 import { TagInput } from '../shared/TagEditor';
@@ -128,6 +129,12 @@ export function TransactionFormModal({
     enabled: open && (mode === 'expense' || mode === 'income' || mode === 'refund'),
   });
 
+  /** The laptop is unreachable: the entry waits in the phone outbox and syncs later. */
+  function queued() {
+    toast.info(t('outbox.queued'));
+    onOpenChange(false);
+  }
+
   async function save(allowDuplicate = false) {
     setSaving(true);
     form.setFormError(null);
@@ -145,7 +152,7 @@ export function TransactionFormModal({
           tags: v.tags,
         };
         if (editing) await api.put(`/api/finance/transactions/${editing.id}`, body);
-        else await api.post('/api/finance/transfers', body);
+        else if ((await postOrQueue('/api/finance/transfers', body, t('tx.type.transfer'))).queued) return queued();
       } else {
         const body = {
           type: mode,
@@ -162,7 +169,7 @@ export function TransactionFormModal({
           allowDuplicate,
         };
         if (editing) await api.put(`/api/finance/transactions/${editing.id}`, body);
-        else await api.post('/api/finance/transactions', body);
+        else if ((await postOrQueue('/api/finance/transactions', body, `${t(`tx.type.${mode}` as MessageKey)} ${v.amount}`)).queued) return queued();
       }
       try {
         localStorage.setItem(LAST_ACCOUNT, v.accountId);

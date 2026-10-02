@@ -51,7 +51,7 @@ async function handle<T>(res: Response): Promise<T> {
   );
 }
 
-async function request<T>(method: string, url: string, body?: unknown): Promise<T> {
+async function request<T>(method: string, url: string, body?: unknown, extraHeaders: Record<string, string> = {}): Promise<T> {
   let res: Response;
   try {
     res = await fetch(url, {
@@ -62,6 +62,7 @@ async function request<T>(method: string, url: string, body?: unknown): Promise<
         // Required by the server's CSRF check on every state-changing request.
         'X-Life-ERP': '1',
         ...(body !== undefined && !(body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+        ...extraHeaders,
       },
       body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
     });
@@ -73,7 +74,7 @@ async function request<T>(method: string, url: string, body?: unknown): Promise<
 
 export const api = {
   get: <T>(url: string) => request<T>('GET', url),
-  post: <T>(url: string, body?: unknown) => request<T>('POST', url, body ?? {}),
+  post: <T>(url: string, body?: unknown, headers?: Record<string, string>) => request<T>('POST', url, body ?? {}, headers),
   put: <T>(url: string, body?: unknown) => request<T>('PUT', url, body ?? {}),
   patch: <T>(url: string, body?: unknown) => request<T>('PATCH', url, body ?? {}),
   del: <T>(url: string) => request<T>('DELETE', url),

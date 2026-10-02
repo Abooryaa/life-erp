@@ -8,7 +8,9 @@ import fastifyStatic from '@fastify/static';
 import Fastify, { type FastifyBaseLogger } from 'fastify';
 import { ZodError } from 'zod';
 import type { AppConfig } from './config';
-import { DatabaseError, openDb } from './db/client';
+import { eq } from 'drizzle-orm';
+import { DatabaseError, getDb, openDb } from './db/client';
+import { idempotencyKeys } from './db/schema';
 import { AppError, fromZod } from './lib/errors';
 import { newId } from './lib/ids';
 import { authRoutes, cookieName } from './modules/auth/routes';
@@ -84,6 +86,25 @@ export async function buildApp(config: AppConfig, opts: { logger?: FastifyBaseLo
     }
     const path = req.url.split('?')[0];
     if (!req.user && !PUBLIC_API.has(path)) throw new AppError(401, 'unauthorized', 'Please sign in');
+  });
+
+  // Idempotent retries: the phone outbox re-sends queued creates with the same key; a request
+  // that already succeeded returns its original response instead of creating a duplicate.
+  app.addHook('preHandler', async (req, reply) => {
+    const key = req.headers['x-idempotency-key'];
+    if (req.method !== 'POST' || typeof key !== 'string' || !/^[\w-]{8,100}$/.test(key) || !req.user) return;
+    const hit = getDb().select().from(idempotencyKeys).where(eq(idempotencyKeys.key, `${req.user.id}:${key}`)).get();
+    if (hit) {
+      return reply.code(hit.status).header('content-type', 'application/json; charset=utf-8').header('x-idempotent-replay', '1').send(hit.body);
+    }
+    (req as { idemKey?: string }).idemKey = `${req.user.id}:${key}`;
+  });
+  app.addHook('onSend', async (req, reply, payload) => {
+    const key = (req as { idemKey?: string }).idemKey;
+    if (key && reply.statusCode < 400 && typeof payload === 'string') {
+      getDb().insert(idempotencyKeys).values({ key, status: reply.statusCode, body: payload }).onConflictDoNothing().run();
+    }
+    return payload;
   });
 
   app.setErrorHandler((err, req, reply) => {
