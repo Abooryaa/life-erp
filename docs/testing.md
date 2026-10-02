@@ -43,7 +43,22 @@ Server tests create a fresh, temporary data folder per test file and drive the r
 | Goals | Contributions, pace, ETA, what-if scenario without side effects, linked-account mode with FX |
 | Formatting (web) | Money/dates in EN/AR, Western and Arabic-Indic digits, time-zone-safe dates, translation completeness and placeholder parity |
 
-**Total: 86 automated tests.**
+## Coverage added in Phase 2 (life core)
+| Area | Tests |
+|---|---|
+| Quick capture parser | Dates (today/tomorrow/weekdays/explicit/“in N days”/next week), times (24h, am/pm), priority, tags, Arabic words, untouched plain text |
+| Goal math | Numeric progress incl. decreasing targets, expected progress, health states |
+| Tasks | Inbox vs planned, quick capture endpoint, views and counts, recurrence spawns next exactly once, linked-record validation |
+| Calendar | Recurring/multi-day expansion, time validation, unified feed (tasks, birthdays), reminders sent once, range limits |
+| Goals | Progress from check-ins, tasks, children and savings goal; loop prevention; required targets; behind-schedule alert |
+| Notes | Wiki links resolve (incl. notes created later), backlinks, search, pin/archive |
+| People | Interactions, last contact, follow-up → single task, follow-up cleared by contact, duplicate detection |
+| Today | Overdue, due today, events, birthdays |
+| Outbox | Replayed request with the same idempotency key returns the original response, no duplicate |
+
+Manually verified in the browser: Markdown sanitisation (an `onerror` image, a `javascript:` link and a `<script>` are all neutralised).
+
+**Total: 110 automated tests.**
 
 ## Manual checks per release
 - `npm run build`, then `npm start`, then sign in on desktop and on a phone-sized screen.

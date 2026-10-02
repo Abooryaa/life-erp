@@ -31,8 +31,16 @@ Each phase is built, tested and documented before the next one starts. Cross-cut
 - Demo data for all of the above
 - Deferred to Phase 6: bank CSV import (the JSON export already covers getting data *out*)
 
-## Phase 2: Life core
-**Today** screen, tasks (statuses, priority, recurrence, global or linked to anything), calendar (events, deadlines, recurring), goals/OKRs hierarchy with automatic progress, notes/knowledge base (rich text, note links), personal contacts, inbox/quick capture, phone outbox for offline quick-adds, first automations (follow-ups, overdue, deadlines).
+## ✅ Phase 2: Life core
+- **Today** screen (phone home): overdue / due today / in progress, schedule, payments due, follow-ups, goals needing attention, birthdays, alerts, inbox prompt
+- **Tasks**: inbox → planned → in progress → waiting → done/cancelled, priority, area, due date/time, recurrence (next one created on completion, once), links to goals/contacts/workspace, tags, attachments; views (inbox, today, upcoming, anytime, waiting, done), drag-and-drop board, **natural-language capture** in English and Arabic ("Call Ahmed tomorrow 3pm !high #mma", "بكرة")
+- **Calendar**: events (all-day, timed, multi-day, recurring with end date, reminders) plus a unified feed of task due dates, payments, goal deadlines and birthdays; month grid + day agenda, week start from settings
+- **Goals / OKRs**: vision → long-term → objective → milestone; progress from numeric check-ins (incl. decreasing targets), linked tasks, sub-goals or a savings goal; health (on track / at risk / behind / overdue) against linear expected progress
+- **Notes**: Markdown (sanitised), auto-save, pin/archive, `[[wiki links]]` with backlinks and create-on-click, tags, attachments
+- **Contacts**: personal relationship CRM (family, friends, clients, contractors, recruiters…), call/WhatsApp buttons (Egyptian numbers normalised), interaction log, last contact, follow-ups, birthdays
+- **Phone outbox**: quick-adds made while the laptop is unreachable are kept on the phone and synced later; server-side idempotency keys guarantee no duplicates
+- **Automations**: daily overdue/due-today summary, event reminders, follow-up → task (once), birthday reminders, goal-behind-schedule warnings
+- Command center: Today snapshot + money summary; demo data for all of the above
 
 ## Phase 3: Businesses & CRM
 Business home pages (P&L, KPIs), people and organizations with roles per business (lead, prospect, client, supplier, partner…), interaction history (call, WhatsApp, email, meeting), customizable pipelines and opportunities with analytics, projects (Kanban, list, calendar, milestones, budget vs actual, revenue/expenses), business finance linked to Phase 1.

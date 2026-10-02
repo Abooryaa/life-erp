@@ -114,6 +114,10 @@
       font-size: 15px;
     }
   }
+  /* Grid items default to min-width:auto and grow to fit long content, overflowing on phones. */
+  .grid > * {
+    min-width: 0;
+  }
   ::selection {
     background: var(--accent-soft);
   }

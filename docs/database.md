@@ -47,6 +47,16 @@ SQLite 3 (WAL mode, foreign keys on), file `<data>\db\life.sqlite`. Schema code:
 
 Reporting rules: income = Σ income; spending = Σ expenses − refunds; **transfers and adjustments are excluded** from both. Conversions use the rate effective at the end of the reported month.
 
+## Life tables (Phase 2)
+| Table | Purpose |
+|---|---|
+| `tasks` | Title, status, priority 1–4, area, `due_date` + optional `due_time`, recurrence, links to `goal_id`, `person_id`, `project_id` (Phase 3), `workspace_id`. `source` (unique) marks automation-created tasks so they are never duplicated. |
+| `events` | Local date + wall-clock times (user's time zone), all-day / multi-day, recurrence + until, reminder minutes. Occurrences are expanded on read. |
+| `goals`, `goal_checkins` | Self-referencing hierarchy (`parent_id`, `level`), progress metric (`none`, `numeric`, `tasks`, `children`, `savings`), check-in history. |
+| `notes` | Title + Markdown body, pinned, archived. `[[links]]` are stored in `entity_links` (relation `mentions`). |
+| `people`, `interactions` | Contacts with relationship, phones, email, birthday, follow-up; interaction log (call, WhatsApp, email, meeting, message, note). |
+| `idempotency_keys` | Stored responses for retried POSTs from the phone outbox (kept 7 days). |
+
 ## Planned tables
 - **Assets** (Phase 5): `assets`, `asset_valuations`.
 - **Work**: `projects`, `milestones`, `tasks`, `task_comments`, `events`.
