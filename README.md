@@ -1,17 +1,17 @@
-﻿# LIFE ERP
+# LIFE ERP
 
-A private, **local-first** personal operating system â€” one place for your money, work, businesses, career, goals, documents and knowledge.
+A private, **local-first** personal operating system — one place for your money, work, businesses, career, goals, documents and knowledge.
 
 - **Your data stays on your laptop**: a single SQLite database plus a documents folder. No cloud database, no subscription.
 - **Use it from your phone anywhere** through a private, encrypted Tailscale connection (free). Nothing is exposed to the public internet.
 - **English and Arabic** (full right-to-left layout), installable on the phone as an app (PWA).
 - **Complete backups** in one `.zip` you can restore anywhere.
 
-> Status: **Phases 0–2 (foundation, personal finance, life core) are complete.** CRM, projects, career, analytics and the AI assistant are added phase by phase â€” see [docs/roadmap.md](docs/roadmap.md).
+> Status: **Phases 0–2 (foundation, personal finance, life core) are complete.** CRM, projects, career, analytics and the AI assistant are added phase by phase — see [docs/roadmap.md](docs/roadmap.md).
 
 ## Quick start
 
-Prerequisites: **Node.js 22.12+** (24 recommended) and Git. Nothing else â€” no database server, no Visual Studio.
+Prerequisites: **Node.js 22.12+** (24 recommended) and Git. Nothing else — no database server, no Visual Studio.
 
 ```bash
 npm install
@@ -37,23 +37,23 @@ Forgot your password? On the laptop: `npm run cli -w @life-erp/server -- reset-p
 ## Where your data lives
 
 ```
-C:\Users\<you>\LifeERP-Data\        â† change with LIFE_ERP_DATA_DIR in .env
-â”œâ”€â”€ db\life.sqlite                  the database (standard SQLite)
-â”œâ”€â”€ files\                          uploaded documents (content-addressed)
-â”œâ”€â”€ backups\                        automatic + manual backup .zip files
-â”œâ”€â”€ config\                         instance settings (secrets.json)
-â”œâ”€â”€ logs\server.log                 server log (rotated at 10 MB)
-â””â”€â”€ tmp\                            scratch space (cleaned automatically)
+C:\Users\<you>\LifeERP-Data\        ← change with LIFE_ERP_DATA_DIR in .env
+├── db\life.sqlite                  the database (standard SQLite)
+├── files\                          uploaded documents (content-addressed)
+├── backups\                        automatic + manual backup .zip files
+├── config\                         instance settings (secrets.json)
+├── logs\server.log                 server log (rotated at 10 MB)
+└── tmp\                            scratch space (cleaned automatically)
 ```
 
-Copy this folder (with LIFE ERP stopped) and you have everything. Keep it **out of OneDrive/Dropbox**; point the *backup* folder there instead (Settings â†’ Backups).
+Copy this folder (with LIFE ERP stopped) and you have everything. Keep it **out of OneDrive/Dropbox**; point the *backup* folder there instead (Settings → Backups).
 
 ## Documentation
 
 | | |
 |---|---|
 | [Setup](docs/setup.md) | Install, first run, production mode, auto-start, troubleshooting |
-| [Remote access](docs/remote-access.md) | Phone access from anywhere with Tailscale â€” step by step |
+| [Remote access](docs/remote-access.md) | Phone access from anywhere with Tailscale — step by step |
 | [Backup & restore](docs/backup-restore.md) | What a backup contains, restoring, moving to a new laptop |
 | [Security](docs/security.md) | Threat model and every protection in place |
 | [Architecture](docs/architecture.md) | How the system is built and why |
@@ -65,4 +65,3 @@ Copy this folder (with LIFE ERP stopped) and you have everything. Keep it **out 
 ## Environment variables
 
 See [.env.example](.env.example). All are optional: `LIFE_ERP_DATA_DIR`, `LIFE_ERP_DEMO_DIR`, `PORT`, `LIFE_ERP_LAN`, `LIFE_ERP_MAX_UPLOAD_MB`, `LIFE_ERP_SESSION_DAYS`.
-
