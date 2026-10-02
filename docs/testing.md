@@ -69,7 +69,18 @@ Manually verified in the browser: Markdown sanitisation (an `onerror` image, a `
 | Automations | Over-budget, milestone due, next-action reminders (and none for won deals) |
 | Business overview | Month and year-to-date P&L, pipeline, role counts |
 
-**Total: 125 automated tests.**
+## Coverage added in Phase 4 (career)
+| Area | Tests |
+|---|---|
+| Career math | Funnel rates, CV bullet assembly (only your own words), tenure |
+| Applications | Default statuses, saved vs applied, salary range validation, unknown recruiter refused, interview moves status, invalid time refused, closing sets the closed date, partial update keeps other fields, funnel, open filter, statuses in use protected, rename |
+| Automations | Follow-up → exactly one task and one reminder; overdue learning warning |
+| Work history | End before start refused, current job first, tenure |
+| Skills & achievements | Level range, duplicate names, company/role from the job, CV bullet generated then overridden, last used + achievement count + gap, CV export grouped by job |
+| Learning | Start date not contradicting a past deadline, 100% → completed, overview counts, search |
+| Calendar | Interviews appear in the feed |
+
+**Total: 139 automated tests** (38 shared, 96 server, 5 web).
 
 ## Manual checks per release
 - `npm run build`, then `npm start`, then sign in on desktop and on a phone-sized screen.

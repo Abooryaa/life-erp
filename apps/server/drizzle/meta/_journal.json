@@ -36,6 +36,13 @@
       "when": 1790950037284,
       "tag": "0004_business",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1790969925583,
+      "tag": "0005_career",
+      "breakpoints": true
     }
   ]
 }

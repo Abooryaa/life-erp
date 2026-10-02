@@ -2,6 +2,8 @@ import { addDays, daysBetween, OPEN_TASK_STATUSES } from '@life-erp/shared';
 import { and, eq, gte, inArray, isNotNull, isNull, lte } from 'drizzle-orm';
 import { getDb } from '../../db/client';
 import { goals, milestones, projects, tasks } from '../../db/schema';
+import { followUpsDue as applicationFollowUps, upcomingInterviews } from '../career/applications';
+import { listLearning } from '../career/profile';
 import { upcoming } from '../finance/reports';
 import { listNotifications } from '../notifications/service';
 import { today } from './common';
@@ -44,7 +46,7 @@ export function todayView(workspaceId?: string | null) {
 }
 
 export interface CalendarItem {
-  kind: 'event' | 'task' | 'payment' | 'goal' | 'birthday' | 'followup' | 'project';
+  kind: 'event' | 'task' | 'payment' | 'goal' | 'birthday' | 'followup' | 'project' | 'career';
   id: string;
   title: string;
   date: string;
@@ -118,6 +120,20 @@ export function calendarFeed(from: string, to: string, workspaceId?: string | nu
   for (const { m, workspaceId: wsId, projectName } of msRows) {
     if (ws && wsId !== ws) continue;
     items.push({ kind: 'project', id: m.id, title: `${projectName}: ${m.title}`, date: m.dueDate!, allDay: true, done: m.done, workspaceId: wsId, link: `/projects/${m.projectId}` });
+  }
+  // Career is personal, so it only shows in the all-workspaces view.
+  if (!ws) {
+    for (const { i, company, position } of upcomingInterviews(from, to)) {
+      items.push({ kind: 'career', id: i.id, title: `Interview: ${company}`, date: i.date, time: i.time, allDay: !i.time, link: `/career/applications?open=${i.applicationId}`, meta: { position, stage: i.stage, mode: i.mode } });
+    }
+    for (const a of applicationFollowUps(to)) {
+      if (a.followUpDate! < from) continue;
+      items.push({ kind: 'career', id: `fu:${a.id}`, title: `Follow up: ${a.company}`, date: a.followUpDate!, allDay: true, link: `/career/applications?open=${a.id}`, meta: { position: a.position } });
+    }
+    for (const l of listLearning()) {
+      if (!l.deadline || l.deadline < from || l.deadline > to || l.status === 'dropped') continue;
+      items.push({ kind: 'career', id: `learn:${l.id}`, title: `${l.title} (deadline)`, date: l.deadline, allDay: true, done: l.status === 'completed', link: `/career/learning?open=${l.id}` });
+    }
   }
   for (const b of birthdaysBetween(from, to)) {
     items.push({ kind: 'birthday', id: `${b.person.id}:${b.date}`, title: b.person.fullName, date: b.date, allDay: true, link: `/people/${b.person.id}`, meta: { age: b.age } });

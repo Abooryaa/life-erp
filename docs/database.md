@@ -69,13 +69,19 @@ Reporting rules: income = Σ income; spending = Σ expenses − refunds; **trans
 
 Project money is **not stored twice**: revenue and costs are computed from `transactions.project_id`.
 
+## Career tables (Phase 4)
+| Table | Purpose |
+|---|---|
+| `employments` | Jobs held: company (optional `organization_id`), position, type, start/end (null end = current), salary (minor units) + currency + period, manager (text and/or contact). |
+| `application_statuses` | Your application statuses, in order, each with a `kind` (saved, active, interview, offer, accepted, rejected, withdrawn) used by the funnel. Defaults are created once. |
+| `job_applications` | Company, position, status, dates, salary range, work mode, source, recruiter contact, follow-up date, CV version, job description, outcome, priority, `closed_at`. |
+| `interviews` | Per application: stage, date/time, mode, interviewer, outcome. |
+| `skills` | Name, category, level and target (0–5), last used, evidence, linked goal. |
+| `achievements`, `achievement_skills` | Achievements (date, job, metric, impact, CV relevance, own CV bullet) and the skills used. |
+| `learning_items` | Courses/books/certifications: status, progress, dates, completion date, cost, linked skill and goal. |
+
 ## Planned tables
 - **Assets** (Phase 5): `assets`, `asset_valuations`.
-- **Work**: `projects`, `milestones`, `tasks`, `task_comments`, `events`.
-- **People**: `people`, `organizations`, `relationships` (role per workspace: lead/client/supplier/partner…), `interactions`, `pipelines`, `pipeline_stages`, `opportunities`.
-- **Career**: `employments`, `job_applications`, `interviews`, `achievements`, `skills`, `learning_items`.
-- **Goals**: `goals` (self-referencing `parent_id`, `level`: vision → long-term → objective → milestone).
-- **Knowledge**: `notes`.
 - **System**: `automations`, `automation_runs`, `reviews`, `scenarios`, `custom_field_defs`.
 
 The full design is in [roadmap.md](roadmap.md).

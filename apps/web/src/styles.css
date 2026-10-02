@@ -118,6 +118,10 @@
   .grid > * {
     min-width: 0;
   }
+  /* Free text the user wrote: each line takes the direction of its own language (English inside the Arabic UI and vice versa). */
+  .whitespace-pre-wrap {
+    unicode-bidi: plaintext;
+  }
   ::selection {
     background: var(--accent-soft);
   }

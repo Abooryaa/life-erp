@@ -1,4 +1,9 @@
 import {
+  Briefcase,
+  GraduationCap,
+  Send,
+  Sparkles,
+  Trophy,
   Building2,
   Calendar,
   CalendarClock,
@@ -36,6 +41,11 @@ const ICONS: Record<string, LucideIcon> = {
   debt: HandCoins,
   savings_goal: PiggyBank,
   budget: Wallet,
+  job_application: Send,
+  employment: Briefcase,
+  skill: Sparkles,
+  achievement: Trophy,
+  learning: GraduationCap,
 };
 
 export function EntityIcon({ type }: { type: string }) {

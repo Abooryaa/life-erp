@@ -1,6 +1,12 @@
 import {
   Activity,
   ArrowLeftRight,
+  Briefcase,
+  BriefcaseBusiness,
+  GraduationCap,
+  Send,
+  Sparkles,
+  Trophy,
   Bell,
   CalendarClock,
   CalendarDays,
@@ -67,6 +73,17 @@ export const NAV: NavSection[] = [
       { to: '/pipeline', label: 'nav.pipeline', icon: TrendingUp },
       { to: '/people', label: 'nav.people', icon: Users },
       { to: '/companies', label: 'nav.companies', icon: Building },
+    ],
+  },
+  {
+    label: 'nav.sectionCareer',
+    items: [
+      { to: '/career', label: 'nav.career', icon: Briefcase, end: true },
+      { to: '/career/applications', label: 'nav.applications', icon: Send },
+      { to: '/career/jobs', label: 'nav.jobs', icon: BriefcaseBusiness },
+      { to: '/career/achievements', label: 'nav.achievements', icon: Trophy },
+      { to: '/career/skills', label: 'nav.skills', icon: Sparkles },
+      { to: '/career/learning', label: 'nav.learning', icon: GraduationCap },
     ],
   },
   {

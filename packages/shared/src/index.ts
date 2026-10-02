@@ -10,4 +10,6 @@ export * from './schemas/finance';
 export * from './schemas/life';
 export * from './schemas/business';
 export * from './business';
+export * from './schemas/career';
+export * from './career';
 export * from './life';

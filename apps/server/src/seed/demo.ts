@@ -27,6 +27,8 @@ import { addRelation, createOrganization } from '../modules/business/organizatio
 import { createOpportunity, listPipelines, updateOpportunity } from '../modules/business/pipeline';
 import { addMilestone, createProject, projectFromOpportunity, updateProject } from '../modules/business/projects';
 import { listAccounts } from '../modules/finance/accounts';
+import { addInterview, createApplication, listStatuses, updateApplication } from '../modules/career/applications';
+import { createAchievement, createEmployment, createLearning, createSkill } from '../modules/career/profile';
 
 /**
  * Demo data lives ONLY in the separate demo data folder (LifeERP-Demo), so it can
@@ -61,7 +63,45 @@ export async function seedDemo() {
   seedFinance(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
   seedLife(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
   seedBusiness(ctx, { mma: mma.id, basira: basira.id });
+  seedCareer(ctx);
   return { userId, personal, mma, basira };
+}
+
+function seedCareer(ctx: { userId: string }) {
+  const today = todayLocal();
+  const old = createEmployment(ctx, { company: 'Delta Textiles', position: 'Data Analyst', department: 'Planning', startDate: '2019-03-01', endDate: '2022-06-30', salary: '18000', location: 'Cairo' });
+  const cur = createEmployment(ctx, {
+    company: 'Nile Retail Group',
+    position: 'Senior BI Analyst',
+    department: 'Commercial',
+    startDate: '2022-07-15',
+    salary: '42000',
+    location: 'Cairo',
+    workSchedule: 'Sun–Thu, hybrid',
+    responsibilities: 'Sales and inventory dashboards for 40 stores.\nDemand forecasting with the planning team.',
+  });
+  const skill = (name: string, category: string, level: number, targetLevel?: number) => createSkill(ctx, { name, category: category as never, level, targetLevel });
+  const sql = skill('SQL', 'data', 4, 5);
+  const pbi = skill('Power BI', 'tool', 4, 5);
+  const py = skill('Python', 'technical', 2, 4);
+  skill('Forecasting', 'data', 3, 4);
+  skill('Stakeholder management', 'soft', 3);
+  skill('English', 'language', 4);
+  createAchievement(ctx, { date: addDays(today, -40), employmentId: cur.id, title: 'Automated the weekly sales pack', metric: 'cut preparation from 2 days to 1 hour', impact: 'regional managers get numbers on Sunday morning', skillIds: [sql.id, pbi.id], cvRelevance: 3 });
+  createAchievement(ctx, { date: addDays(today, -200), employmentId: cur.id, title: 'Built a store-level demand forecast', metric: 'reduced stock-outs by 18%', skillIds: [py.id], cvRelevance: 3 });
+  createAchievement(ctx, { date: '2021-09-10', employmentId: old.id, title: 'Replaced manual production reports with a dashboard', metric: 'used daily by 3 factory managers', skillIds: [pbi.id], cvRelevance: 2 });
+  createLearning(ctx, { title: 'Python for Data Analysis', type: 'book', provider: "O'Reilly", skillId: py.id, status: 'in_progress', progress: 45, deadline: addDays(today, 30) });
+  createLearning(ctx, { title: 'PL-300 Power BI Data Analyst', type: 'certification', provider: 'Microsoft', skillId: pbi.id, status: 'planned', deadline: addDays(today, 75), cost: '5500' });
+  createLearning(ctx, { title: 'Time series forecasting', type: 'course', provider: 'Coursera', status: 'completed', progress: 100 });
+  const statuses = listStatuses();
+  const st = (name: string) => statuses.find((s) => s.name === name)!.id;
+  createApplication(ctx, { company: 'Fashion Hub Egypt', position: 'Analytics Manager', appliedDate: addDays(today, -12), statusId: st('Applied'), source: 'LinkedIn', followUpDate: today, priority: 1, salaryMin: '55000', salaryMax: '65000' });
+  const a2 = createApplication(ctx, { company: 'MenaPay', position: 'Lead Data Analyst', appliedDate: addDays(today, -20), source: 'Referral', workMode: 'hybrid' });
+  addInterview(ctx, { applicationId: a2.id, stage: 'HR call', date: addDays(today, -8), mode: 'phone', outcome: 'passed' });
+  addInterview(ctx, { applicationId: a2.id, stage: 'Technical interview', date: addDays(today, 2), time: '11:00', mode: 'video' });
+  updateApplication(ctx, a2.id, { statusId: st('Technical interview') });
+  createApplication(ctx, { company: 'Cairo Logistics', position: 'BI Developer', statusId: st('Saved'), source: 'Wuzzuf' });
+  createApplication(ctx, { company: 'Gulf Foods', position: 'Data Analyst', appliedDate: addDays(today, -45), statusId: st('Rejected'), outcome: 'Position filled internally' });
 }
 
 function seedBusiness(ctx: { userId: string }, ws: { mma: string; basira: string }) {

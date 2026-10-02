@@ -19,10 +19,14 @@ import './business/organizations';
 import './business/pipeline';
 import './business/projects';
 import './business/jobs';
+import './career/applications';
+import './career/profile';
+import './career/jobs';
 import '../jobs/core-jobs';
 import { businessRoutes } from './business/routes';
+import { careerRoutes } from './career/routes';
 import { financeRoutes } from './finance/routes';
 import { lifeRoutes } from './life/routes';
 
 /** Route plugins of feature modules (finance, tasks, CRM, …). */
-export const moduleRoutes: FastifyPluginAsync[] = [financeRoutes, lifeRoutes, businessRoutes];
+export const moduleRoutes: FastifyPluginAsync[] = [financeRoutes, lifeRoutes, businessRoutes, careerRoutes];

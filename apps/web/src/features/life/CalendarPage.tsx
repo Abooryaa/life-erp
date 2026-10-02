@@ -1,7 +1,7 @@
 import { addDays, addMonthsToMonth, monthEnd } from '@life-erp/shared';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Cake, CalendarDays, CheckSquare, ChevronLeft, ChevronRight, CreditCard, FolderKanban, Plus, Target } from 'lucide-react';
+import { Briefcase, Cake, CalendarDays, CheckSquare, ChevronLeft, ChevronRight, CreditCard, FolderKanban, Plus, Target } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Button } from '../../components/ui/button';
@@ -16,7 +16,7 @@ import { Money } from '../finance/fin-lib';
 import { localToday } from './TasksPage';
 
 export interface CalItem {
-  kind: 'event' | 'task' | 'payment' | 'goal' | 'birthday' | 'followup' | 'project';
+  kind: 'event' | 'task' | 'payment' | 'goal' | 'birthday' | 'followup' | 'project' | 'career';
   id: string;
   title: string;
   date: string;
@@ -37,8 +37,9 @@ const KIND_STYLE: Record<CalItem['kind'], string> = {
   birthday: 'bg-info-soft text-info',
   followup: 'bg-surface-2 text-ink-2',
   project: 'bg-neg-soft text-neg',
+  career: 'bg-info-soft text-info',
 };
-const KIND_ICON = { event: CalendarDays, task: CheckSquare, payment: CreditCard, goal: Target, birthday: Cake, followup: CheckSquare, project: FolderKanban };
+const KIND_ICON = { event: CalendarDays, task: CheckSquare, payment: CreditCard, goal: Target, birthday: Cake, followup: CheckSquare, project: FolderKanban, career: Briefcase };
 
 function itemsOn(items: CalItem[], date: string) {
   return items.filter((i) => i.date === date || (i.endDate && i.date < date && i.endDate >= date));

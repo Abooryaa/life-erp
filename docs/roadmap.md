@@ -54,8 +54,18 @@ Each phase is built, tested and documented before the next one starts. Cross-cut
 - Automations: deal next-action reminders, project deadline (≤5 days) and delayed warnings, over-budget warnings, milestone reminders
 - Demo data: MMA Spaces pipeline, a running villa/apartment project with money and milestones, Basira MVP and pilot deal
 
-## Phase 4: Career
-Employment history, job applications pipeline (customizable statuses, interviews, follow-ups), achievements database with CV-bullet export, skills (level/target/evidence), learning plans (courses, books, certifications).
+## ✅ Phase 4: Career
+- **Career overview**: current job and tenure, total experience, application funnel, upcoming interviews and follow-ups, skill gaps, learning in progress, recent achievements
+- **Work history**: jobs with company (optionally linked to a company record), position, type, dates (no end date = current), salary and period, schedule, manager, responsibilities, benefits; timeline with tenure; attachments (contracts, payslips) and links
+- **Job applications** board: customizable statuses, each with a meaning (saved / applied / interview / offer / accepted / rejected / withdrawn) so renaming never breaks the numbers; statuses still in use are protected; drag and drop; salary range, work mode, source, recruiter contact, CV version, job description, outcome, priority
+- **Interviews** per application (stage, date/time, mode, outcome); logging one moves an early application into the interview stage
+- **Funnel**: applied, in progress, response rate, interview rate, offer rate
+- **Achievements**: date, job, result/metric, impact, skills used, CV relevance; a **CV bullet** is suggested only from the words you entered (or you write your own); **CV export** grouped by job as Markdown (copy or download)
+- **Skills**: category, level 0–5 and target, gap, last used (updated automatically from achievements), evidence, linked goal
+- **Learning**: courses, books, certifications…; status, progress (100% = completed), start date, deadline, cost, linked skill and goal
+- Calendar shows interviews, application follow-ups and learning deadlines (all-workspaces view)
+- Automations: application follow-up → one task + reminder; interview reminders (day before and same day); learning deadline soon / passed
+- Demo data: two jobs, six skills, achievements, learning items and four applications in different stages
 
 ## Phase 5: Insights
 Assets and investments with valuation history, net worth (liquid/non-liquid/liabilities), analytics across finance/career/business/life, configurable dashboard widgets, weekly review, monthly review (month vs previous month), scenario planning.
