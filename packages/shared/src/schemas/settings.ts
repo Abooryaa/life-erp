@@ -1,0 +1,45 @@
+import { z } from 'zod';
+import { currencySchema } from './common';
+
+export const settingsSchema = z.object({
+  locale: z.enum(['en', 'ar']).default('en'),
+  /** Latin digits are the common choice even in Arabic UI; 'arab' uses ٠١٢٣. */
+  digits: z.enum(['latn', 'arab']).default('latn'),
+  theme: z.enum(['system', 'light', 'dark']).default('system'),
+  timezone: z.string().min(1).max(64).default('Africa/Cairo'),
+  /** 0 = Sunday … 6 = Saturday */
+  weekStart: z.number().int().min(0).max(6).default(6),
+  /** Day the weekly review is due (0 = Sunday … 6 = Saturday). */
+  weeklyReviewDay: z.number().int().min(0).max(6).default(6),
+  baseCurrency: currencySchema.default('EGP'),
+  dateFormat: z.enum(['dd/MM/yyyy', 'yyyy-MM-dd', 'MM/dd/yyyy']).default('dd/MM/yyyy'),
+  backup: z
+    .object({
+      auto: z.boolean().default(true),
+      /** Local time HH:mm for the nightly backup. */
+      time: z.string().regex(/^\d{2}:\d{2}$/).default('02:00'),
+      retention: z.number().int().min(1).max(365).default(14),
+      /** Absolute folder path; null = <data dir>/backups */
+      dir: z.string().max(400).nullable().default(null),
+    })
+    .default({ auto: true, time: '02:00', retention: 14, dir: null }),
+  ai: z
+    .object({
+      enabled: z.boolean().default(false),
+      provider: z.enum(['ollama', 'anthropic']).default('ollama'),
+      ollamaUrl: z.string().max(200).default('http://127.0.0.1:11434'),
+      ollamaModel: z.string().max(100).default('qwen3:8b'),
+      anthropicModel: z.string().max(100).default('claude-sonnet-5'),
+    })
+    .default({
+      enabled: false,
+      provider: 'ollama',
+      ollamaUrl: 'http://127.0.0.1:11434',
+      ollamaModel: 'qwen3:8b',
+      anthropicModel: 'claude-sonnet-5',
+    }),
+});
+
+export type Settings = z.infer<typeof settingsSchema>;
+export const settingsPatchSchema = settingsSchema.partial();
+export type SettingsPatch = z.infer<typeof settingsPatchSchema>;

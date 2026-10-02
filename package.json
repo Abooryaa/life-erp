@@ -1,0 +1,41 @@
+{
+  "name": "life-erp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LIFE ERP — a private, local-first personal operating system",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build -w @life-erp/web && npm run build -w @life-erp/server",
+    "start": "node scripts/start.mjs",
+    "stop": "node scripts/stop.mjs",
+    "icons": "node scripts/gen-icons.mjs",
+    "demo": "node scripts/run-demo.mjs",
+    "backup": "npm run cli -w @life-erp/server -- backup",
+    "restore": "npm run cli -w @life-erp/server -- restore",
+    "reset-dev": "npm run cli -w @life-erp/server -- reset-dev",
+    "seed-demo": "npm run cli -w @life-erp/server -- seed-demo",
+    "db:generate": "npm run db:generate -w @life-erp/server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e -w @life-erp/web"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
+  }
+}

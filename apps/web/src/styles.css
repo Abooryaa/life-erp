@@ -1,0 +1,162 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter/index.css';
+@import '@fontsource/ibm-plex-sans-arabic/400.css';
+@import '@fontsource/ibm-plex-sans-arabic/500.css';
+@import '@fontsource/ibm-plex-sans-arabic/600.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * LIFE ERP design tokens.
+ * Neutral "paper & ink" surfaces, one ink-blue accent, semantic colours for money and status.
+ * Every colour is a variable so light/dark are a single switch.
+ */
+:root {
+  --canvas: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f1f3f6;
+  --surface-3: #e8ebf0;
+  --line: #e2e6ec;
+  --line-strong: #cfd5de;
+  --ink: #141820;
+  --ink-2: #4a5262;
+  --ink-3: #7b8494;
+  --accent: #2f54d6;
+  --accent-hover: #2546bd;
+  --accent-ink: #ffffff;
+  --accent-soft: #e9eefc;
+  --pos: #12805c;
+  --pos-soft: #e3f4ec;
+  --neg: #c4362c;
+  --neg-soft: #fbe9e7;
+  --warn: #b26a00;
+  --warn-soft: #fdf1dc;
+  --info: #1f6fb2;
+  --info-soft: #e4f0fa;
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.05), 0 1px 3px rgb(16 24 40 / 0.06);
+  --shadow-lg: 0 12px 32px -8px rgb(16 24 40 / 0.18), 0 4px 8px -4px rgb(16 24 40 / 0.08);
+  color-scheme: light;
+}
+
+.dark {
+  --canvas: #0e1116;
+  --surface: #161a21;
+  --surface-2: #1c212a;
+  --surface-3: #252b36;
+  --line: #262c37;
+  --line-strong: #353d4b;
+  --ink: #e8ebf0;
+  --ink-2: #aab2c0;
+  --ink-3: #7b8494;
+  --accent: #6f8cff;
+  --accent-hover: #8aa1ff;
+  --accent-ink: #0b1020;
+  --accent-soft: #1d2645;
+  --pos: #3fbf8f;
+  --pos-soft: #12291f;
+  --neg: #f06b5f;
+  --neg-soft: #2e1714;
+  --warn: #e8a640;
+  --warn-soft: #2d2210;
+  --info: #5aa7e8;
+  --info-soft: #11233a;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-pos: var(--pos);
+  --color-pos-soft: var(--pos-soft);
+  --color-neg: var(--neg);
+  --color-neg-soft: var(--neg-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --shadow-card: var(--shadow);
+  --shadow-pop: var(--shadow-lg);
+  --radius-card: 10px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-canvas text-ink antialiased;
+    font-size: 14px;
+    line-height: 1.5;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  /* Arabic reads better slightly larger with more line height. */
+  html[lang='ar'] body {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  @media (max-width: 767px) {
+    body {
+      font-size: 15px;
+    }
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  input,
+  select,
+  textarea {
+    font-size: inherit;
+  }
+  /* Phones: 16px inputs prevent the browser from zooming on focus. */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility safe-top {
+  padding-top: env(safe-area-inset-top);
+}
