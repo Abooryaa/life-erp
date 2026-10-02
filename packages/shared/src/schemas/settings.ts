@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { currencySchema } from './common';
+import { DASHBOARD_WIDGETS } from './insights';
 
 export const settingsSchema = z.object({
   locale: z.enum(['en', 'ar']).default('en'),
@@ -12,6 +13,8 @@ export const settingsSchema = z.object({
   /** Day the weekly review is due (0 = Sunday … 6 = Saturday). */
   weeklyReviewDay: z.number().int().min(0).max(6).default(6),
   baseCurrency: currencySchema.default('EGP'),
+  /** Command-center widgets, in order. Missing = the default set. */
+  dashboard: z.array(z.enum(DASHBOARD_WIDGETS)).max(DASHBOARD_WIDGETS.length).nullable().default(null),
   dateFormat: z.enum(['dd/MM/yyyy', 'yyyy-MM-dd', 'MM/dd/yyyy']).default('dd/MM/yyyy'),
   backup: z
     .object({

@@ -67,8 +67,15 @@ Each phase is built, tested and documented before the next one starts. Cross-cut
 - Automations: application follow-up → one task + reminder; interview reminders (day before and same day); learning deadline soon / passed
 - Demo data: two jobs, six skills, achievements, learning items and four applications in different stages
 
-## Phase 5: Insights
-Assets and investments with valuation history, net worth (liquid/non-liquid/liabilities), analytics across finance/career/business/life, configurable dashboard widgets, weekly review, monthly review (month vs previous month), scenario planning.
+## ✅ Phase 5: Insights
+- **Assets**: property, vehicles, gold, stocks, funds, crypto, business shares, equipment…; liquid or not, quantity/unit, purchase date and price, valuation history (purchase price + today's value recorded on creation), gain/loss, "count in net worth" switch, mark as sold (keeps history, stops counting from that date; can be undone), attachments and links
+- **Net worth**: cash & bank, liquid investments, property & other assets, money owed to you, minus cards/loans/overdrafts, remaining installments and debts — all in the main currency, with missing exchange rates named instead of guessed. Recorded **once a day** so the trend builds from real data (nothing back-filled)
+- **Analytics** (6/12/24 months): income vs spending vs savings, net worth, tasks done/added and goal check-ins, goals by health, deals won, applications/interviews/achievements/learning
+- **Weekly review** (weeks start on your week-start day, default Saturday; due on your review day) and **monthly review**: money vs the previous period with top spending, tasks done/added/slipped, goal check-ins and goals needing attention, events, contacts logged, deals won, projects finished, applications, interviews, achievements, learning; reflection questions (wins, challenges, lessons, priorities, rating) and last period's priorities shown back to you. Completing a review **freezes its numbers**; reopening returns to live numbers
+- **Scenarios**: month-by-month cash projection from your real recent averages (or your own numbers) plus changes (monthly or one-off, from/to month); end balance, lowest point and a warning for the first month below zero
+- **Configurable command center**: show/hide and reorder cards; new cards for net worth, reviews, goals, businesses and career
+- Automations: daily net-worth snapshot; weekly review reminder on the review day, monthly review reminder at month end / first days — only while the review isn't done
+- Demo data: four assets, a sample net-worth history (demo only), a "leave job" scenario and a completed weekly review
 
 ## Phase 6: Automation engine & data tools
 User-configurable automation rules, custom fields, CSV/JSON import for every module, bank-statement CSV mapping.

@@ -29,6 +29,12 @@ import { addMilestone, createProject, projectFromOpportunity, updateProject } fr
 import { listAccounts } from '../modules/finance/accounts';
 import { addInterview, createApplication, listStatuses, updateApplication } from '../modules/career/applications';
 import { createAchievement, createEmployment, createLearning, createSkill } from '../modules/career/profile';
+import { defaultReviewPeriod } from '@life-erp/shared';
+import { netWorthSnapshots } from '../db/schema';
+import { snapshotNetWorth } from '../modules/insights/analytics';
+import { createAsset } from '../modules/insights/assets';
+import { saveReview } from '../modules/insights/reviews';
+import { createScenario } from '../modules/insights/scenarios';
 
 /**
  * Demo data lives ONLY in the separate demo data folder (LifeERP-Demo), so it can
@@ -64,7 +70,46 @@ export async function seedDemo() {
   seedLife(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
   seedBusiness(ctx, { mma: mma.id, basira: basira.id });
   seedCareer(ctx);
+  seedInsights(ctx, { mma: mma.id });
   return { userId, personal, mma, basira };
+}
+
+function seedInsights(ctx: { userId: string }, ws: { mma: string }) {
+  const today = todayLocal();
+  createAsset(ctx, { name: 'Apartment – Nasr City', type: 'real_estate', purchaseDate: '2019-05-01', purchasePrice: '1,450,000', currentValue: '3,800,000' });
+  createAsset(ctx, { name: 'Car – Hyundai Elantra', type: 'vehicle', purchaseDate: '2022-02-10', purchasePrice: '420,000', currentValue: '610,000' });
+  createAsset(ctx, { name: 'Gold savings', type: 'gold', liquidity: 'liquid', quantity: 60, unit: 'g', purchasePrice: '150,000', purchaseDate: '2023-01-15', currentValue: '255,000' });
+  createAsset(ctx, { name: 'Site equipment', type: 'equipment', workspaceId: ws.mma, purchaseDate: '2024-03-01', purchasePrice: '95,000', currentValue: '70,000' });
+  // Demo only: a made-up history so the net-worth chart has something to show.
+  const now = snapshotNetWorth(today);
+  for (let i = 1; i <= 11; i++) {
+    const d = addDays(today, -30 * i);
+    const drift = 1 - i * 0.012;
+    getDb()
+      .insert(netWorthSnapshots)
+      .values({ date: d, base: now.base, liquid: Math.round(now.liquid * drift), investments: now.investments, otherAssets: now.otherAssets, liabilities: now.liabilities, netWorth: Math.round(now.netWorth * drift) })
+      .run();
+  }
+  createScenario(ctx, {
+    name: 'Leave job to run MMA full-time',
+    horizonMonths: 12,
+    adjustments: [
+      { label: 'Salary stops', amount: '-42000', kind: 'monthly', startMonth: 3 },
+      { label: 'Owner draw from MMA', amount: '25000', kind: 'monthly', startMonth: 4 },
+      { label: 'Emergency buffer top-up', amount: '-30000', kind: 'once', startMonth: 1 },
+    ],
+  });
+  const week = defaultReviewPeriod('weekly', today, 6);
+  saveReview(ctx, {
+    type: 'weekly',
+    periodStart: addDays(week.start, -7),
+    wins: 'Closed the kitchen deal. Two interviews booked.',
+    challenges: 'Too many site visits; gym skipped.',
+    lessons: 'Batch client calls on one afternoon.',
+    priorities: 'Send villa proposal\nPrepare for MenaPay technical interview\nReview September budget',
+    rating: 4,
+    completed: true,
+  });
 }
 
 function seedCareer(ctx: { userId: string }) {

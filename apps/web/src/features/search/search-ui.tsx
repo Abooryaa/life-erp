@@ -1,5 +1,8 @@
 import {
   Briefcase,
+  CalendarCheck,
+  FlaskConical,
+  Gem,
   GraduationCap,
   Send,
   Sparkles,
@@ -46,6 +49,9 @@ const ICONS: Record<string, LucideIcon> = {
   skill: Sparkles,
   achievement: Trophy,
   learning: GraduationCap,
+  asset: Gem,
+  review: CalendarCheck,
+  scenario: FlaskConical,
 };
 
 export function EntityIcon({ type }: { type: string }) {

@@ -1,8 +1,12 @@
 import {
   Activity,
   ArrowLeftRight,
+  BarChart3,
   Briefcase,
   BriefcaseBusiness,
+  CalendarCheck,
+  FlaskConical,
+  Gem,
   GraduationCap,
   Send,
   Sparkles,
@@ -92,6 +96,7 @@ export const NAV: NavSection[] = [
       { to: '/finance', label: 'nav.finance', icon: PieChart, end: true },
       { to: '/finance/transactions', label: 'nav.transactions', icon: ArrowLeftRight },
       { to: '/finance/accounts', label: 'nav.accounts', icon: Landmark },
+      { to: '/finance/net-worth', label: 'nav.netWorth', icon: Gem },
       { to: '/finance/budgets', label: 'nav.budgets', icon: Wallet },
       { to: '/finance/recurring', label: 'nav.recurring', icon: Repeat },
       { to: '/finance/installments', label: 'nav.installments', icon: CalendarClock },
@@ -99,6 +104,14 @@ export const NAV: NavSection[] = [
       { to: '/finance/goals', label: 'nav.goals', icon: PiggyBank },
       { to: '/finance/categories', label: 'nav.categories', icon: Shapes },
       { to: '/finance/currencies', label: 'nav.currencies', icon: Coins },
+    ],
+  },
+  {
+    label: 'nav.sectionInsights',
+    items: [
+      { to: '/insights', label: 'nav.analytics', icon: BarChart3 },
+      { to: '/reviews', label: 'nav.reviews', icon: CalendarCheck },
+      { to: '/scenarios', label: 'nav.scenarios', icon: FlaskConical },
     ],
   },
   {

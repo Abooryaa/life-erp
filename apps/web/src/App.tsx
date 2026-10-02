@@ -42,6 +42,10 @@ import { ApplicationsPage } from './features/career/ApplicationsPage';
 import { JobDetailPage, JobsPage } from './features/career/JobsPage';
 import { AchievementsPage } from './features/career/AchievementsPage';
 import { LearningPage, SkillsPage } from './features/career/SkillsLearningPage';
+import { NetWorthPage } from './features/insights/NetWorthPage';
+import { AnalyticsPage } from './features/insights/AnalyticsPage';
+import { ReviewDetailPage, ReviewsPage } from './features/insights/ReviewsPage';
+import { ScenarioDetailPage, ScenariosPage } from './features/insights/ScenariosPage';
 
 const DEFAULT_FORMAT: Omit<FormatOptions, 'locale'> = {
   digits: 'latn',
@@ -117,6 +121,12 @@ function Private() {
               <Route path="career/achievements" element={<AchievementsPage />} />
               <Route path="career/skills" element={<SkillsPage />} />
               <Route path="career/learning" element={<LearningPage />} />
+              <Route path="finance/net-worth" element={<NetWorthPage />} />
+              <Route path="insights" element={<AnalyticsPage />} />
+              <Route path="reviews" element={<ReviewsPage />} />
+              <Route path="reviews/:type/:start" element={<ReviewDetailPage />} />
+              <Route path="scenarios" element={<ScenariosPage />} />
+              <Route path="scenarios/:id" element={<ScenarioDetailPage />} />
               <Route path="finance" element={<FinanceOverviewPage />} />
               <Route path="finance/transactions" element={<TransactionsPage />} />
               <Route path="finance/accounts" element={<AccountsPage />} />

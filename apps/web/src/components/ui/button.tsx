@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { Loader2 } from 'lucide-react';
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { Link, type LinkProps } from 'react-router';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'subtle';
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon' | 'icon-sm';
@@ -28,6 +29,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
 }
 
+const base = 'inline-flex shrink-0 select-none items-center rounded-lg font-medium whitespace-nowrap transition-colors';
+
+/** A navigation link that looks like a button (never nest a <button> inside a link). */
+export function ButtonLink({ to, variant = 'secondary', size = 'md', icon, className, children, ...rest }: LinkProps & { variant?: ButtonVariant; size?: ButtonSize; icon?: ReactNode }) {
+  return (
+    <Link to={to} className={clsx(base, variants[variant], sizes[size], className)} {...rest}>
+      {icon}
+      {children}
+    </Link>
+  );
+}
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { variant = 'secondary', size = 'md', loading, icon, className, children, disabled, type = 'button', ...rest },
   ref,
@@ -38,7 +51,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       type={type}
       disabled={disabled || loading}
       className={clsx(
-        'inline-flex shrink-0 select-none items-center rounded-lg font-medium whitespace-nowrap transition-colors',
+        base,
         'disabled:pointer-events-none disabled:opacity-50',
         variants[variant],
         sizes[size],

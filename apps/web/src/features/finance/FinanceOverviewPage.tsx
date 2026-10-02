@@ -151,7 +151,7 @@ export function FinanceOverviewPage() {
         <Kpi label={t('fin.income')} value={<Money minor={c.income} currency={data.base} />} extra={<Delta now={c.income} before={p.income} />} />
         <Kpi label={t('fin.expenses')} value={<Money minor={c.expenses} currency={data.base} />} extra={<Delta now={c.expenses} before={p.expenses} invert />} />
         <Kpi label={t('fin.savings')} value={<Money minor={c.net} currency={data.base} colored />} extra={c.savingsRate != null ? <span className="text-[12px] text-ink-3">{t('fin.savingsRate')} {fmt.percent(c.savingsRate)}</span> : null} />
-        <Kpi label={t('fin.cash')} value={<Money minor={data.net.liquid} currency={data.base} />} extra={<span className="text-[12px] text-ink-3">{t('fin.netWorth')} <Money minor={data.net.netWorth} currency={data.base} compact /></span>} />
+        <Kpi label={t('fin.cash')} value={<Money minor={data.net.liquid} currency={data.base} />} extra={<Link to="/finance/net-worth" className="text-[12px] text-ink-3 hover:underline">{t('fin.netWorth')} <Money minor={data.net.netWorth} currency={data.base} compact /></Link>} />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-3">

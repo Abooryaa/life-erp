@@ -80,9 +80,19 @@ Project money is **not stored twice**: revenue and costs are computed from `tran
 | `achievements`, `achievement_skills` | Achievements (date, job, metric, impact, CV relevance, own CV bullet) and the skills used. |
 | `learning_items` | Courses/books/certifications: status, progress, dates, completion date, cost, linked skill and goal. |
 
+## Insights tables (Phase 5)
+| Table | Purpose |
+|---|---|
+| `assets` | Name, type, liquidity, optional workspace, currency, purchase date/price, quantity + unit, include-in-net-worth, `disposed_at`/`disposed_value` when sold. |
+| `asset_valuations` | Dated values (minor units). The value on a date is the latest valuation on or before it. |
+| `net_worth_snapshots` | One row per day (primary key = date) with liquid, investments, other assets, liabilities and net worth in the base currency at that time. |
+| `reviews` | One per (type, period start): reflection text, rating, `completed_at`, and `metrics` — a JSON copy of the numbers frozen when completed. |
+| `scenarios` | Horizon, optional income/expense/start-balance overrides and a JSON list of changes (minor units of the base currency). |
+
+The dashboard layout is stored in settings (`dashboard`: ordered list of card ids, or null for the default).
+
 ## Planned tables
-- **Assets** (Phase 5): `assets`, `asset_valuations`.
-- **System**: `automations`, `automation_runs`, `reviews`, `scenarios`, `custom_field_defs`.
+- **System**: `automations`, `automation_runs`, `custom_field_defs`.
 
 The full design is in [roadmap.md](roadmap.md).
 

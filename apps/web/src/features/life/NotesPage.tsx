@@ -4,7 +4,7 @@ import { Archive, ArchiveRestore, ArrowLeft, Eye, NotebookPen, Pencil, Pin, PinO
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Markdown } from '../../components/Markdown';
-import { Button } from '../../components/ui/button';
+import { Button, ButtonLink } from '../../components/ui/button';
 import { ConfirmDialog } from '../../components/ui/dialog';
 import { EmptyState, ErrorBlock, LoadingBlock, Spinner, useToast } from '../../components/ui/feedback';
 import { Input, Textarea } from '../../components/ui/form';
@@ -217,11 +217,9 @@ function NoteEditor({ id }: { id: string }) {
     <div className="space-y-4">
       <div className="rounded-card border border-line bg-surface shadow-card">
         <div className="flex flex-wrap items-center gap-2 border-b border-line px-3 py-2">
-          <Link to="/notes" className="lg:hidden">
-            <Button variant="ghost" size="icon-sm" aria-label={t('common.back')}>
-              <ArrowLeft className="size-4 rtl:rotate-180" />
-            </Button>
-          </Link>
+          <ButtonLink to="/notes" variant="ghost" size="icon-sm" className="lg:hidden" aria-label={t('common.back')}>
+            <ArrowLeft className="size-4 rtl:rotate-180" />
+          </ButtonLink>
           <div className="inline-flex rounded-lg bg-surface-2 p-0.5">
             <Button size="sm" variant={mode === 'write' ? 'secondary' : 'ghost'} icon={<Pencil className="size-3.5" />} onClick={() => setMode('write')}>
               {t('notes.write')}

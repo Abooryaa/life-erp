@@ -80,7 +80,16 @@ Manually verified in the browser: Markdown sanitisation (an `onerror` image, a `
 | Learning | Start date not contradicting a past deadline, 100% → completed, overview counts, search |
 | Calendar | Interviews appear in the feed |
 
-**Total: 139 automated tests** (38 shared, 96 server, 5 web).
+## Coverage added in Phase 5 (insights)
+| Area | Tests |
+|---|---|
+| Periods & projection | Week start for Saturday weeks; weekly/monthly default periods (Fri/Sat/Sun, month end); previous period; scenario projection with monthly, one-off and ending changes, lowest point, first negative month |
+| Assets & net worth | Current value required, no purchase after valuation, purchase + current valuations, gain; liquid vs physical in net worth; daily snapshot; future valuations not counted; currency locked once valued; sold assets stop counting, keep history, undo |
+| Reviews | Draft with live numbers (tasks, spending), Saturday weeks, one review per period, completing freezes numbers, edits keep them, reopening returns to live numbers, future periods and bad ratings refused, last period's priorities, reminder only on the review day and only until done |
+| Scenarios | Invalid month ranges refused, explicit numbers, partial update keeps changes, fallback to real cash |
+| Analytics & dashboard | Aligned monthly series; dashboard layout stored, unknown widgets refused |
+
+**Total: 155 automated tests** (42 shared, 108 server, 5 web).
 
 ## Manual checks per release
 - `npm run build`, then `npm start`, then sign in on desktop and on a phone-sized screen.

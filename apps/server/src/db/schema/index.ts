@@ -3,3 +3,4 @@ export * from './finance';
 export * from './life';
 export * from './business';
 export * from './career';
+export * from './insights';

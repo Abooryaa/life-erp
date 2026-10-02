@@ -13,3 +13,5 @@ export * from './business';
 export * from './schemas/career';
 export * from './career';
 export * from './life';
+export * from './schemas/insights';
+export * from './insights';

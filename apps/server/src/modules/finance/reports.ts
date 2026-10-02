@@ -2,6 +2,7 @@ import { addDays, addMonthsToMonth, LIQUID_ACCOUNT_TYPES, monthEnd, monthStart, 
 import { and, eq, gte, inArray, isNull, lte, sql, type SQL } from 'drizzle-orm';
 import { getDb } from '../../db/client';
 import { debts, transactions } from '../../db/schema';
+import { assetTotals } from '../insights/assets';
 import { getSettings } from '../settings/service';
 import { listAccounts } from './accounts';
 import { listCategories, topLevelMap } from './categories';
@@ -70,6 +71,20 @@ export function monthlySeries(endMonth: string, count: number, s: Scope = {}) {
   return { base, months, missingRates: [...missing] };
 }
 
+/** Income, spending (net of refunds) and savings for any date range, in the base currency. */
+export function periodTotals(from: string, to: string, s: Scope = {}) {
+  const base = getSettings().baseCurrency;
+  const conv = makeConverter(base, to);
+  let income = 0;
+  let expenses = 0;
+  for (const r of grouped(from, to, s)) {
+    const v = conv.convert(Number(r.total), r.currency);
+    if (r.type === 'income') income += v;
+    else expenses -= v;
+  }
+  return { base, income, expenses, net: income - expenses, savingsRate: savingsRate(income, expenses), missingRates: [...conv.missing] };
+}
+
 /** Spending (or income) per category for a period, rolled up to top-level categories. */
 export function categoryBreakdown(from: string, to: string, kind: 'income' | 'expense', s: Scope = {}) {
   const base = getSettings().baseCurrency;
@@ -123,8 +138,8 @@ export function spendingFor(categoryIds: string[], month: string, s: Scope = {})
 }
 
 /**
- * Net worth from what the finance module knows: account balances, minus remaining
- * installments and debts you owe, plus money owed to you. (Physical assets arrive in Phase 5.)
+ * Net worth: account balances, your assets (property, gold, investments…) at their latest
+ * valuation, money owed to you, minus remaining installments and debts you owe.
  */
 export function netPosition(today: string) {
   const base = getSettings().baseCurrency;
@@ -151,12 +166,15 @@ export function netPosition(today: string) {
     if (d.direction === 'i_owe') debtsOwed += v;
     else receivables += v;
   }
-  const assets = liquid + otherAssets + receivables;
+  const held = assetTotals(today, (m, c) => conv.convert(m, c));
+  const assets = liquid + otherAssets + receivables + held.liquid + held.nonLiquid;
   const liabilities = accountLiabilities + installmentsRemaining + debtsOwed;
   return {
     base,
     liquid,
     otherAssets,
+    investments: held.liquid,
+    physicalAssets: held.nonLiquid,
     receivables,
     accountLiabilities,
     installmentsRemaining,
