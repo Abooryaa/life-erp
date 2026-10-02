@@ -15,6 +15,13 @@
       "when": 1790933503489,
       "tag": "0001_search_index",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790936070975,
+      "tag": "0002_finance",
+      "breakpoints": true
     }
   ]
 }

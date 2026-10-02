@@ -66,6 +66,8 @@ export function DashboardPage() {
         <BackupStatus />
       </div>
 
+      <MoneySummary />
+
       <div className="grid gap-5 lg:grid-cols-3">
         <Panel
           title={t('dash.recentDocuments')}
@@ -134,6 +136,82 @@ export function DashboardPage() {
             </li>
           ))}
         </ul>
+      </Panel>
+    </div>
+  );
+}
+
+interface MoneyOverview {
+  today: string;
+  base: string;
+  current: { income: number; expenses: number; net: number; savingsRate: number | null };
+  net: { liquid: number; netWorth: number };
+  upcoming: { id: string; kind: string; date: string; name: string; amount: number; currency: string; direction: 'in' | 'out'; overdue: boolean; link: string }[];
+  accounts: unknown[];
+}
+
+/** This month's money at a glance + what is due in the next 7 days. */
+function MoneySummary() {
+  const { t, fmt } = useI18n();
+  const { currentId } = useWorkspace();
+  const { data } = useQuery({
+    queryKey: ['finance', 'overview', 'dashboard', currentId],
+    queryFn: () => api.get<MoneyOverview>(`/api/finance/overview${qs({ workspaceId: currentId })}`),
+  });
+  if (!data || data.accounts.length === 0) return null;
+  const week = new Date(Date.parse(`${data.today}T00:00:00Z`) + 7 * 86_400_000).toISOString().slice(0, 10);
+  const soon = data.upcoming.filter((u) => u.date <= week);
+  const money = (m: number, cur = data.base) => (
+    <span className="num" dir="ltr">
+      {fmt.money(m, cur)}
+    </span>
+  );
+  return (
+    <div className="grid gap-5 lg:grid-cols-3">
+      <Panel
+        title={t('fin.thisMonth')}
+        className="lg:col-span-2"
+        actions={
+          <Link to="/finance" className="text-[13px] font-medium text-accent hover:underline">
+            {t('nav.money')}
+          </Link>
+        }
+      >
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div>
+            <p className="text-[12.5px] text-ink-3">{t('fin.income')}</p>
+            <p className="font-semibold text-pos">{money(data.current.income)}</p>
+          </div>
+          <div>
+            <p className="text-[12.5px] text-ink-3">{t('fin.expenses')}</p>
+            <p className="font-semibold text-neg">{money(data.current.expenses)}</p>
+          </div>
+          <div>
+            <p className="text-[12.5px] text-ink-3">{t('fin.savingsRate')}</p>
+            <p className="font-semibold">{data.current.savingsRate == null ? '—' : fmt.percent(data.current.savingsRate)}</p>
+          </div>
+          <div>
+            <p className="text-[12.5px] text-ink-3">{t('fin.cash')}</p>
+            <p className="font-semibold">{money(data.net.liquid)}</p>
+          </div>
+        </div>
+      </Panel>
+      <Panel title={t('fin.upcoming')} padded={false}>
+        {soon.length === 0 ? (
+          <p className="p-4 text-[13px] text-ink-3">{t('fin.noUpcoming')}</p>
+        ) : (
+          <ul className="divide-y divide-line">
+            {soon.slice(0, 5).map((u) => (
+              <li key={`${u.kind}:${u.id}`}>
+                <Link to={u.link} className="flex items-center gap-2 px-4 py-2 text-[13px] hover:bg-surface-2">
+                  <span className={`num w-16 shrink-0 ${u.overdue ? 'text-neg' : 'text-ink-3'}`}>{fmt.date(u.date)}</span>
+                  <span className="min-w-0 flex-1 truncate">{u.name}</span>
+                  {money(u.amount, u.currency)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </Panel>
     </div>
   );

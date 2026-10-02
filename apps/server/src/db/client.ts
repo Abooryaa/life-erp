@@ -41,7 +41,14 @@ export function openDb(file: string): DB {
   const db = drizzle(sqlite, { schema });
   migrate(db, { migrationsFolder: MIGRATIONS_DIR });
   state = { file, sqlite, db };
+  for (const fn of openHooks) fn();
   return db;
+}
+
+const openHooks: (() => void)[] = [];
+/** Run after every (re)open — e.g. seeding defaults into a freshly created or restored database. */
+export function afterDbOpen(fn: () => void) {
+  openHooks.push(fn);
 }
 
 export function closeDb() {

@@ -1,7 +1,9 @@
 import clsx from 'clsx';
 import { ChevronDown } from 'lucide-react';
 import {
+  createContext,
   forwardRef,
+  useContext,
   useId,
   type InputHTMLAttributes,
   type ReactNode,
@@ -9,6 +11,17 @@ import {
   type TextareaHTMLAttributes,
 } from 'react';
 import { useI18n } from '../../i18n';
+
+/** Lets a Field's <label> point at whatever control is inside it, without wiring ids by hand. */
+const FieldIdContext = createContext<string | undefined>(undefined);
+export function useFieldId(explicit?: string) {
+  const fromField = useContext(FieldIdContext);
+  return explicit ?? fromField;
+}
+/** Wrap repeated controls inside one Field (lists of rows) so they don't share the field's id. */
+export function NoFieldId({ children }: { children: ReactNode }) {
+  return <FieldIdContext.Provider value={undefined}>{children}</FieldIdContext.Provider>;
+}
 
 const control =
   'w-full rounded-lg border bg-surface text-ink placeholder:text-ink-3 transition-colors ' +
@@ -19,25 +32,28 @@ function borderFor(invalid?: boolean) {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }>(
-  function Input({ className, invalid, ...rest }, ref) {
-    return <input ref={ref} aria-invalid={invalid || undefined} className={clsx(control, borderFor(invalid), 'h-9 px-3', className)} {...rest} />;
+  function Input({ className, invalid, id, ...rest }, ref) {
+    const fid = useFieldId(id);
+    return <input ref={ref} id={fid} aria-invalid={invalid || undefined} className={clsx(control, borderFor(invalid), 'h-9 px-3', className)} {...rest} />;
   },
 );
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement> & { invalid?: boolean }>(
-  function Textarea({ className, invalid, rows = 3, ...rest }, ref) {
+  function Textarea({ className, invalid, rows = 3, id, ...rest }, ref) {
+    const fid = useFieldId(id);
     return (
-      <textarea ref={ref} rows={rows} aria-invalid={invalid || undefined} className={clsx(control, borderFor(invalid), 'px-3 py-2 leading-relaxed', className)} {...rest} />
+      <textarea ref={ref} id={fid} rows={rows} aria-invalid={invalid || undefined} className={clsx(control, borderFor(invalid), 'px-3 py-2 leading-relaxed', className)} {...rest} />
     );
   },
 );
 
 /** Native select: the best picker on phones, styled to match. */
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement> & { invalid?: boolean }>(
-  function Select({ className, invalid, children, ...rest }, ref) {
+  function Select({ className, invalid, children, id, ...rest }, ref) {
+    const fid = useFieldId(id);
     return (
       <div className={clsx('relative', className)}>
-        <select ref={ref} aria-invalid={invalid || undefined} className={clsx(control, borderFor(invalid), 'h-9 appearance-none ps-3 pe-8')} {...rest}>
+        <select ref={ref} id={fid} aria-invalid={invalid || undefined} className={clsx(control, borderFor(invalid), 'h-9 appearance-none ps-3 pe-8')} {...rest}>
           {children}
         </select>
         <ChevronDown className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-ink-3" aria-hidden />
@@ -64,10 +80,13 @@ export function Field({
   htmlFor?: string;
 }) {
   const { t, te } = useI18n();
+  const autoId = useId();
+  const id = htmlFor ?? autoId;
   return (
+    <FieldIdContext.Provider value={id}>
     <div className={clsx('flex flex-col gap-1.5', className)}>
       {label && (
-        <label htmlFor={htmlFor} className="text-[13px] font-medium text-ink-2">
+        <label htmlFor={id} className="text-[13px] font-medium text-ink-2">
           {label}
           {optional && <span className="ms-1 font-normal text-ink-3">({t('common.optional')})</span>}
         </label>
@@ -81,6 +100,7 @@ export function Field({
         <p className="text-[12.5px] text-ink-3">{hint}</p>
       ) : null}
     </div>
+    </FieldIdContext.Provider>
   );
 }
 

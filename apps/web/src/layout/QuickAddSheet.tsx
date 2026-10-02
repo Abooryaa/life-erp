@@ -1,4 +1,4 @@
-import { Building2, FileUp, type LucideIcon } from 'lucide-react';
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Building2, FileUp, type LucideIcon } from 'lucide-react';
 import { Modal } from '../components/ui/dialog';
 import { useI18n, type MessageKey } from '../i18n';
 import { useUI } from './ui-context';
@@ -16,6 +16,9 @@ interface QuickAction {
  * Only actions that are fully working are listed.
  */
 export const QUICK_ACTIONS: QuickAction[] = [
+  { key: 'expense', label: 'quick.expense', icon: ArrowUpRight, tone: 'bg-neg-soft text-neg', run: (ui) => ui.openTransaction('expense') },
+  { key: 'income', label: 'quick.income', icon: ArrowDownLeft, tone: 'bg-pos-soft text-pos', run: (ui) => ui.openTransaction('income') },
+  { key: 'transfer', label: 'quick.transfer', icon: ArrowLeftRight, tone: 'bg-info-soft text-info', run: (ui) => ui.openTransaction('transfer') },
   { key: 'document', label: 'quick.document', icon: FileUp, tone: 'bg-info-soft text-info', run: (ui) => ui.openUpload() },
   { key: 'workspace', label: 'quick.workspace', icon: Building2, tone: 'bg-surface-2 text-ink-2', run: (ui) => ui.openWorkspaceForm() },
 ];

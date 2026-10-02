@@ -28,7 +28,22 @@ Server tests create a fresh, temporary data folder per test file and drive the r
 | Backup/restore | Verified backup, restore requires typed confirmation, data and files come back exactly, safety backup created, damaged archive refused (data untouched), path tricks refused, demo/real separation |
 | Export | All tables, no sessions, no password hashes |
 
-Each later phase adds tests for its calculations (transfers never count as income/expense, budgets, installment schedules, goal forecasts, net worth…).
+## Coverage added in Phase 1 (finance)
+| Area | Tests |
+|---|---|
+| Shared calculations | Signed amounts per type; month-end clamping and anchor days; recurrence occurrences; installment schedules summing exactly; goal ETA, required monthly, on-track, scenarios, achieved/overdue; budget projection and status; savings rate |
+| Categories | Bilingual defaults seeded once, custom categories, duplicates, nesting limit, in-use protection |
+| Accounts & transactions | Opening balances, sign per type, invalid amounts/precision/dates/category kinds with field errors, duplicate warning + confirm, archived accounts blocked |
+| Transfers | Balances move on both legs, **never counted as income/expense**, cross-currency requires the received amount, edit/delete keep both legs exact |
+| Reports | Monthly income/expenses/net/savings rate, refunds net out, category roll-up, missing FX rates reported (never guessed) then converted, net position |
+| Recurring | Reminders, record, skip, upcoming, **auto-post exactly once** |
+| Installments | Schedule, overdue critical alert, pay/undo restores balance, schedule locked after payments, deleting the payment transaction re-opens the payment, auto-complete, validation |
+| Debts | Repayments adjust the balance but not income/expense, overpayment refused, settle and re-open |
+| Budgets | Actual with subcategory roll-up, over-budget status + alert, parent/child overlap refused |
+| Goals | Contributions, pace, ETA, what-if scenario without side effects, linked-account mode with FX |
+| Formatting (web) | Money/dates in EN/AR, Western and Arabic-Indic digits, time-zone-safe dates, translation completeness and placeholder parity |
+
+**Total: 86 automated tests.**
 
 ## Manual checks per release
 - `npm run build`, then `npm start`, then sign in on desktop and on a phone-sized screen.

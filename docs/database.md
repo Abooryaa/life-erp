@@ -31,8 +31,24 @@ SQLite 3 (WAL mode, foreign keys on), file `<data>\db\life.sqlite`. Schema code:
 | `backups` | History of backup attempts (path, size, status, manifest summary). |
 | `search_index` | FTS5 virtual table: `entity_type`, `entity_id`, `workspace_id`, `title`, `body`, `tags`. |
 
+## Finance tables (Phase 1)
+| Table | Purpose |
+|---|---|
+| `accounts` | Where money lives. `opening_balance` (minor units) + `currency`; balance = opening + Σ live transactions (never stored). |
+| `categories` | Income/expense tree (one level of subcategories), `name` + `name_ar`. |
+| `transactions` | `amount` = **signed effect on the account** in its own minor units. `type` ∈ income, expense, transfer, refund, adjustment. A transfer = two rows sharing `transfer_group`. Optional links to `recurring_id`, `installment_payment_id`, `debt_payment_id`. |
+| `currencies` | Extra currencies beyond the built-in list (code, minor-unit digits). |
+| `fx_rates` | `1 currency = rate base` valid from `date`. Lookups: direct → inverse → via a common base. |
+| `recurring_rules` | Schedule (frequency, interval, start/end, `next_due`), `auto_post`, reminder days. |
+| `installments`, `installment_payments` | Plan + generated schedule rows (`paid_date`, `paid_amount`, `transaction_id`). |
+| `debts`, `debt_payments` | `i_owe` / `owed_to_me`, principal, repayments (optional matching adjustment transaction). |
+| `budgets`, `budget_lines` | Monthly limits per expense category in the base currency, optional workspace scope, active month range. |
+| `savings_goals`, `savings_goal_accounts`, `savings_contributions` | Target, deadline, mode (`manual` / `accounts`), planned monthly amount. |
+
+Reporting rules: income = Σ income; spending = Σ expenses − refunds; **transfers and adjustments are excluded** from both. Conversions use the rate effective at the end of the reported month.
+
 ## Planned tables
-- **Finance**: `accounts`, `categories`, `transactions` (+ `transfer_group`), `recurring_rules`, `budgets`, `budget_lines`, `installments`, `installment_payments`, `debts`, `savings_goals`, `assets`, `asset_valuations`, `fx_rates`.
+- **Assets** (Phase 5): `assets`, `asset_valuations`.
 - **Work**: `projects`, `milestones`, `tasks`, `task_comments`, `events`.
 - **People**: `people`, `organizations`, `relationships` (role per workspace: lead/client/supplier/partner…), `interactions`, `pipelines`, `pipeline_stages`, `opportunities`.
 - **Career**: `employments`, `job_applications`, `interviews`, `achievements`, `skills`, `learning_items`.

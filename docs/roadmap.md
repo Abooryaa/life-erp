@@ -16,8 +16,20 @@ Each phase is built, tested and documented before the next one starts. Cross-cut
 - Production mode, dev mode, demo mode (separate folder), stop script, Windows auto-start
 - Tailscale remote-access guide, docs, 44 automated tests
 
-## Phase 1: Personal finance
-Accounts (bank, cash, savings, credit card, e-wallet, investment), multi-currency with FX rates, categories/subcategories (editable, EN/AR), transactions (income, expense, **transfer**, refund, adjustment) where transfers never count as income/expense, receipts as attachments, recurring transactions/subscriptions, monthly/category/business/project budgets (budget, actual, remaining, % used, projected), installments with automatic schedules, debts and receivables (incl. gam'eya), savings goals with "when will I reach it" forecasts and what-if scenarios, finance overview with charts, quick-add expense in about 5 seconds on the phone, CSV import.
+## ✅ Phase 1: Personal finance
+- Accounts: bank, cash, savings, credit card, e-wallet, investment, loan, **gam'eya**, other. Opening balances, computed balances, archive, and **reconciliation** (adjust to the real balance without touching income/expense)
+- Multi-currency: per-account currency, exchange-rate table, cross rates, custom currencies. Totals that can't be converted are **reported, never guessed**
+- Categories and subcategories (EN/AR names, colours), seeded defaults, archive vs delete protection
+- Transactions: income, expense, **transfer** (two linked legs, never counted as income/expense; cross-currency), refund, adjustment. Tags, receipts as attachments, links, **duplicate detection**, search, filters, totals
+- Quick add for expense/income/transfer from anywhere (phone ➕ button): remembered account, frequent-category chips, decimal keyboard, Arabic digits accepted
+- Recurring items and subscriptions: reminders, one-tap record/skip, optional **auto-record with catch-up** after the laptop was off
+- Installments: automatic schedule (exact to the piaster), down payment, interest/fees, pay/undo with expense recording, overdue alerts, future obligations
+- Debts and receivables: partial repayments (balance-only adjustments), settle/re-open, due alerts
+- Budgets: monthly per category (subcategories roll up), per workspace (business budgets), budget/actual/remaining/% used/**projected**, 80% and over-budget alerts
+- Savings goals: manual contributions or linked-account balances, pace, **ETA**, required monthly amount, on-track status, **what-if scenarios** (calculated only, nothing saved)
+- Overview: income/expenses/savings/savings rate vs last month, 12-month trend, spending by category, cash, net position, upcoming 30 days. Command-center money summary
+- Demo data for all of the above
+- Deferred to Phase 6: bank CSV import (the JSON export already covers getting data *out*)
 
 ## Phase 2: Life core
 **Today** screen, tasks (statuses, priority, recurrence, global or linked to anything), calendar (events, deadlines, recurring), goals/OKRs hierarchy with automatic progress, notes/knowledge base (rich text, note links), personal contacts, inbox/quick capture, phone outbox for offline quick-adds, first automations (follow-ups, overdue, deadlines).

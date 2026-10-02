@@ -18,6 +18,16 @@ import { NotificationsPage } from './features/notifications/NotificationsPage';
 import { WorkspacePage } from './features/workspaces/WorkspacePage';
 import { SettingsPage } from './features/settings/SettingsPage';
 import { PwaUpdater } from './layout/PwaUpdater';
+import { FinanceOverviewPage } from './features/finance/FinanceOverviewPage';
+import { TransactionsPage } from './features/finance/TransactionsPage';
+import { AccountDetailPage, AccountsPage } from './features/finance/AccountsPage';
+import { BudgetDetailPage, BudgetsPage } from './features/finance/BudgetsPage';
+import { RecurringPage } from './features/finance/RecurringPage';
+import { InstallmentDetailPage, InstallmentsPage } from './features/finance/InstallmentsPage';
+import { DebtsPage } from './features/finance/DebtsPage';
+import { GoalDetailPage, GoalsPage } from './features/finance/GoalsPage';
+import { CategoriesPage } from './features/finance/CategoriesPage';
+import { CurrenciesPage } from './features/finance/CurrenciesPage';
 
 const DEFAULT_FORMAT: Omit<FormatOptions, 'locale'> = {
   digits: 'latn',
@@ -72,6 +82,20 @@ function Private() {
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="workspaces/:id" element={<WorkspacePage />} />
               <Route path="settings/*" element={<SettingsPage />} />
+              <Route path="finance" element={<FinanceOverviewPage />} />
+              <Route path="finance/transactions" element={<TransactionsPage />} />
+              <Route path="finance/accounts" element={<AccountsPage />} />
+              <Route path="finance/accounts/:id" element={<AccountDetailPage />} />
+              <Route path="finance/budgets" element={<BudgetsPage />} />
+              <Route path="finance/budgets/:id" element={<BudgetDetailPage />} />
+              <Route path="finance/recurring" element={<RecurringPage />} />
+              <Route path="finance/installments" element={<InstallmentsPage />} />
+              <Route path="finance/installments/:id" element={<InstallmentDetailPage />} />
+              <Route path="finance/debts" element={<DebtsPage />} />
+              <Route path="finance/goals" element={<GoalsPage />} />
+              <Route path="finance/goals/:id" element={<GoalDetailPage />} />
+              <Route path="finance/categories" element={<CategoriesPage />} />
+              <Route path="finance/currencies" element={<CurrenciesPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

@@ -14,7 +14,13 @@ export const isoDateSchema = z
     return !Number.isNaN(d.getTime()) && d.toISOString().startsWith(s);
   }, 'Not a real calendar date');
 
-export const currencySchema = z.enum(CURRENCY_CODES as [string, ...string[]]);
+/** ISO-4217 style code. Known codes come from CURRENCIES; users can add their own (validated server-side). */
+export const currencySchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .regex(/^[A-Z]{3}$/, 'Use a 3-letter currency code like EGP');
+export const KNOWN_CURRENCIES = CURRENCY_CODES;
 
 export const colorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a hex colour like #3366ff');
 

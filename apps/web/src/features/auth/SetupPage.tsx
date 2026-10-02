@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Plus, ShieldAlert, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Button } from '../../components/ui/button';
-import { Field, FormError, Input, Select, TextField } from '../../components/ui/form';
+import { Field, FormError, Input, NoFieldId, Select, TextField } from '../../components/ui/form';
 import { useI18n } from '../../i18n';
 import { api } from '../../lib/api';
 import { useFormState } from '../../lib/hooks';
@@ -84,6 +84,7 @@ export function SetupPage({ allowed }: { allowed: boolean }) {
           </Field>
         </div>
         <Field label={t('setup.businesses')} hint={t('setup.businessesHint')}>
+          <NoFieldId>
           <div className="space-y-2">
             {v.businesses.map((b, i) => (
               <div key={i} className="flex gap-2">
@@ -101,6 +102,7 @@ export function SetupPage({ allowed }: { allowed: boolean }) {
               {t('setup.addBusiness')}
             </Button>
           </div>
+          </NoFieldId>
         </Field>
         <Button type="submit" variant="primary" size="lg" className="w-full justify-center" loading={busy}>
           {t('setup.create')}

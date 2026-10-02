@@ -7,7 +7,7 @@ A private, **local-first** personal operating system — one place for your mone
 - **English and Arabic** (full right-to-left layout), installable on the phone as an app (PWA).
 - **Complete backups** in one `.zip` you can restore anywhere.
 
-> Status: **Phase 0 (foundation) is complete.** Finance, tasks, goals, calendar, CRM, projects, career, analytics and the AI assistant are added phase by phase — see [docs/roadmap.md](docs/roadmap.md).
+> Status: **Phase 0 (foundation) and Phase 1 (personal finance) are complete.** Tasks, goals, calendar, CRM, projects, career, analytics and the AI assistant are added phase by phase — see [docs/roadmap.md](docs/roadmap.md).
 
 ## Quick start
 
