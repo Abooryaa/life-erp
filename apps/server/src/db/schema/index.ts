@@ -5,3 +5,4 @@ export * from './business';
 export * from './career';
 export * from './insights';
 export * from './automation';
+export * from './ai';

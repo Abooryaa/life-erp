@@ -1,7 +1,7 @@
 import { addDays } from '@life-erp/shared';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ArrowLeft, CalendarCheck, CheckCircle2, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { ArrowLeft, CalendarCheck, CheckCircle2, ChevronLeft, ChevronRight, Sparkles, Star } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Button, ButtonLink } from '../../components/ui/button';
@@ -12,6 +12,7 @@ import { useI18n, type MessageKey } from '../../i18n';
 import { api } from '../../lib/api';
 import { useAction, useFormState } from '../../lib/hooks';
 import { MissingRates, Money } from '../finance/fin-lib';
+import { useAiStatus } from '../ai/ai-lib';
 import { INSIGHT_KEYS } from './insights-lib';
 
 type ReviewType = 'weekly' | 'monthly';
@@ -167,6 +168,14 @@ export function ReviewDetailPage() {
   useEffect(() => {
     if (r) form.setValues({ wins: r.wins ?? '', challenges: r.challenges ?? '', lessons: r.lessons ?? '', priorities: r.priorities ?? '', rating: r.rating });
   }, [r?.periodStart, r?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const ai = useAiStatus();
+  const aiReady = !!ai.data?.ready && ai.data.allow.planning && ai.data.allow.finance;
+  const [suggestions, setSuggestions] = useState<Record<'wins' | 'challenges' | 'lessons' | 'priorities', string> | null>(null);
+  useEffect(() => setSuggestions(null), [rt, start]);
+  const suggest = useAction(() => api.post<{ suggestions: Record<'wins' | 'challenges' | 'lessons' | 'priorities', string> }>('/api/ai/review', { type: rt, start: r!.periodStart }), {
+    invalidate: [['ai', 'log']],
+    onSuccess: (x) => setSuggestions(x.suggestions),
+  });
   const save = useAction(
     (completed: boolean) =>
       api.put<Review>('/api/reviews', {
@@ -194,9 +203,29 @@ export function ReviewDetailPage() {
   const nextStart = rt === 'weekly' ? addDays(r.periodStart, 7) : addDays(r.periodEnd, 1);
   const v = form.values;
   const text = (k: 'wins' | 'challenges' | 'lessons' | 'priorities') => (
-    <Field label={t(`rev.q.${k}` as MessageKey)} hint={t(`rev.h.${k}` as MessageKey)}>
-      <Textarea value={v[k]} onChange={(e) => form.set(k, e.target.value)} rows={3} />
-    </Field>
+    <div className="space-y-1.5">
+      <Field label={t(`rev.q.${k}` as MessageKey)} hint={t(`rev.h.${k}` as MessageKey)}>
+        <Textarea value={v[k]} onChange={(e) => form.set(k, e.target.value)} rows={3} />
+      </Field>
+      {suggestions?.[k] && (
+        <div className="flex items-start gap-2 rounded-lg border border-dashed border-accent/40 bg-accent-soft/40 p-2 text-[13px]">
+          <Sparkles className="mt-0.5 size-3.5 shrink-0 text-accent" />
+          <p className="min-w-0 flex-1 whitespace-pre-wrap" dir="auto">
+            {suggestions[k]}
+          </p>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              form.set(k, v[k] ? `${v[k]}\n${suggestions[k]}` : suggestions[k]);
+              setSuggestions((s) => (s ? { ...s, [k]: '' } : s));
+            }}
+          >
+            {t('rev.useIt')}
+          </Button>
+        </div>
+      )}
+    </div>
   );
   return (
     <div className="space-y-5">
@@ -290,9 +319,19 @@ export function ReviewDetailPage() {
             </div>
           </Panel>
         </div>
-        <Panel title={t('rev.reflect')}>
+        <Panel
+          title={t('rev.reflect')}
+          actions={
+            aiReady && (
+              <Button size="sm" variant="ghost" icon={<Sparkles className="size-4" />} loading={suggest.isPending} onClick={() => suggest.mutate(undefined)}>
+                {t('rev.aiSuggest')}
+              </Button>
+            )
+          }
+        >
           <div className="space-y-4">
             <FormError message={form.formError} />
+            {suggestions && <p className="rounded-lg bg-surface-2/70 px-3 py-2 text-[12.5px] text-ink-3">{t('rev.aiNote')}</p>}
             {r.previousPriorities && (
               <div className="rounded-lg border border-line bg-surface-2/60 p-3">
                 <p className="text-[12.5px] font-medium text-ink-3">{t('rev.lastPriorities')}</p>

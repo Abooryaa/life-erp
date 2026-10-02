@@ -2,6 +2,11 @@ import { z } from 'zod';
 import { currencySchema } from './common';
 import { DASHBOARD_WIDGETS } from './insights';
 
+/** Areas of your data the AI assistant can be allowed to read (each one separately). */
+export const AI_SCOPES = ['finance', 'planning', 'people', 'business', 'career', 'search'] as const;
+export type AiScope = (typeof AI_SCOPES)[number];
+const AI_SCOPE_DEFAULTS = Object.fromEntries(AI_SCOPES.map((s) => [s, true])) as Record<AiScope, boolean>;
+
 export const settingsSchema = z.object({
   locale: z.enum(['en', 'ar']).default('en'),
   /** Latin digits are the common choice even in Arabic UI; 'arab' uses ٠١٢٣. */
@@ -30,16 +35,27 @@ export const settingsSchema = z.object({
     .object({
       enabled: z.boolean().default(false),
       provider: z.enum(['ollama', 'anthropic']).default('ollama'),
-      ollamaUrl: z.string().max(200).default('http://127.0.0.1:11434'),
-      ollamaModel: z.string().max(100).default('qwen3:8b'),
+      ollamaUrl: z
+        .string()
+        .max(200)
+        .regex(/^https?:\/\/[^\s/]+(:\d+)?\/?$/, 'Use a URL like http://127.0.0.1:11434')
+        .default('http://127.0.0.1:11434'),
+      /** Empty = not chosen yet (pick from the models installed in Ollama). */
+      ollamaModel: z.string().max(100).default(''),
       anthropicModel: z.string().max(100).default('claude-sonnet-5'),
+      /** Set when you confirmed that questions and the data they need are sent to Anthropic. */
+      cloudConsentAt: z.string().max(40).nullable().default(null),
+      /** Which parts of your data the assistant may read. */
+      allow: z.object(Object.fromEntries(AI_SCOPES.map((s) => [s, z.boolean().default(true)])) as Record<AiScope, z.ZodDefault<z.ZodBoolean>>).default(AI_SCOPE_DEFAULTS),
     })
     .default({
       enabled: false,
       provider: 'ollama',
       ollamaUrl: 'http://127.0.0.1:11434',
-      ollamaModel: 'qwen3:8b',
+      ollamaModel: '',
       anthropicModel: 'claude-sonnet-5',
+      cloudConsentAt: null,
+      allow: AI_SCOPE_DEFAULTS,
     }),
 });
 

@@ -13,6 +13,8 @@ export interface DataPaths {
   config: string;
   logs: string;
   tmp: string;
+  /** Encryption master key — deliberately NOT included in backups. */
+  keys: string;
 }
 
 export interface AppConfig {
@@ -47,11 +49,12 @@ export function dataPathsFor(root: string): DataPaths {
     config: join(r, 'config'),
     logs: join(r, 'logs'),
     tmp: join(r, 'tmp'),
+    keys: join(r, 'keys'),
   };
 }
 
 export function ensureDataDirs(paths: DataPaths) {
-  for (const dir of [paths.root, paths.db, paths.files, paths.backups, paths.config, paths.logs, paths.tmp]) {
+  for (const dir of [paths.root, paths.db, paths.files, paths.backups, paths.config, paths.logs, paths.tmp, paths.keys]) {
     mkdirSync(dir, { recursive: true });
   }
 }

@@ -2,6 +2,7 @@ import {
   Activity,
   ArrowLeftRight,
   BarChart3,
+  Bot,
   Briefcase,
   BriefcaseBusiness,
   CalendarCheck,
@@ -111,6 +112,7 @@ export const NAV: NavSection[] = [
   {
     label: 'nav.sectionInsights',
     items: [
+      { to: '/assistant', label: 'nav.assistant', icon: Bot },
       { to: '/insights', label: 'nav.analytics', icon: BarChart3 },
       { to: '/reviews', label: 'nav.reviews', icon: CalendarCheck },
       { to: '/scenarios', label: 'nav.scenarios', icon: FlaskConical },
