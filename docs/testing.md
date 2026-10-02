@@ -89,7 +89,16 @@ Manually verified in the browser: Markdown sanitisation (an `onerror` image, a `
 | Scenarios | Invalid month ranges refused, explicit numbers, partial update keeps changes, fallback to real cash |
 | Analytics & dashboard | Aligned monthly series; dashboard layout stored, unknown widgets refused |
 
-**Total: 155 automated tests** (42 shared, 108 server, 5 web).
+## Coverage added in Phase 6 (automation & data tools)
+| Area | Tests |
+|---|---|
+| Rule logic | Numeric vs text comparison, all-conditions, empty checks, templates without invented values; daily/weekly/monthly schedule occurrences incl. day 31 |
+| CSV & formats | Quotes, escaped quotes, newlines in fields, BOM, semicolons; bank amounts (thousand separators, decimal comma, brackets, trailing minus, currency text, Arabic digits); date formats and guessing |
+| Automations | Validation; big expense → notification + linked task + tag (small one ignored); no loops; paused rules; dry-run test without side effects; deal won; failing action logged without blocking the change; schedules fire once per occurrence and never for a past one |
+| Custom fields | Per-type definitions, duplicate names, select needs options, value validation (choice, number, required), search finds values, options/type in use protected |
+| Import | Analyze (delimiter, mapping, decimal comma, split amounts); preview saves nothing, row errors, duplicates within the file; account required; commit; re-import flags everything as duplicate; history; undo restores balances and can't run twice; JSON contacts with loose values, warnings and tags; automations only when asked; saved mappings |
+
+**Total: 177 automated tests** (49 shared, 123 server, 5 web).
 
 ## Manual checks per release
 - `npm run build`, then `npm start`, then sign in on desktop and on a phone-sized screen.

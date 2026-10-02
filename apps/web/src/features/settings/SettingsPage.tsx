@@ -1,7 +1,8 @@
 import { CURRENCIES, type Settings, type SettingsPatch } from '@life-erp/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Building2, Database, HardDriveDownload, Info, Settings2, Shield, Smartphone, Tag, User } from 'lucide-react';
+import { Building2, Database, HardDriveDownload, Info, ListPlus, Settings2, Shield, Smartphone, Tag, User } from 'lucide-react';
+import { CustomFieldSettings } from '../tools/CustomFields';
 import { useEffect } from 'react';
 import { NavLink, Route, Routes } from 'react-router';
 import { Button } from '../../components/ui/button';
@@ -21,6 +22,7 @@ const SECTIONS: { to: string; label: MessageKey; icon: typeof User; element: Rea
   { to: 'security', label: 'settings.security', icon: Shield, element: <SecuritySettings /> },
   { to: 'workspaces', label: 'settings.workspaces', icon: Building2, element: <WorkspaceSettings /> },
   { to: 'tags', label: 'settings.tags', icon: Tag, element: <TagSettings /> },
+  { to: 'fields', label: 'settings.customFields', icon: ListPlus, element: <CustomFieldSettings /> },
   { to: 'backups', label: 'settings.backups', icon: HardDriveDownload, element: <BackupSettings /> },
   { to: 'data', label: 'settings.data', icon: Database, element: <DataSettings /> },
   { to: 'remote', label: 'settings.remote', icon: Smartphone, element: <RemoteSettings /> },

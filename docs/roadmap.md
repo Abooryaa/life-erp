@@ -77,8 +77,16 @@ Each phase is built, tested and documented before the next one starts. Cross-cut
 - Automations: daily net-worth snapshot; weekly review reminder on the review day, monthly review reminder at month end / first days — only while the review isn't done
 - Demo data: four assets, a sample net-worth history (demo only), a "leave job" scenario and a completed weekly review
 
-## Phase 6: Automation engine & data tools
-User-configurable automation rules, custom fields, CSV/JSON import for every module, bank-statement CSV mapping.
+## ✅ Phase 6: Automation engine & data tools
+- **Automation rules** — *when* something happens (transaction recorded, task created/completed, deal created/changes stage, project created, job application added/changes status, contact added, document uploaded) or *on a schedule* (daily / weekly on a day / monthly on a day, at a time), *only if* all conditions hold (is / is not / more / at least / less / at most / contains / empty…, typed per field), *then* notify, create a task (linked to the triggering record, priority, due in N days, workspace) and/or tag the record. Texts can include `{{field}}` values
+- Safe by design: changes made by automations never trigger automations (no loops); a failing action is rolled back and logged without blocking your change; each run is logged (last 200 per rule); a new schedule never fires for a time already past; **Test on recent records** shows what would match and what it would say, without changing anything
+- **Custom fields** for contacts, companies, projects, tasks, deals, job applications, jobs, assets, transactions and documents: text, number, date, choice list, yes/no, link; required flag; reorder; type locked once used; options in use protected; values are **searchable**
+- **Import** from CSV (comma/semicolon/tab, quotes, UTF-8 or Windows-1256 Arabic Excel) or JSON into transactions (bank statements), contacts, companies, tasks, assets and job applications
+  - Columns matched automatically (English and Arabic header names), date format and decimal comma detected, one signed amount column or separate money-in / money-out, categories matched by name (EN/AR) with defaults per kind
+  - **Check before importing**: every row runs through the same validation as the app inside a transaction that is rolled back — you see exactly what will be created, errors per row and possible duplicates (also duplicates within the same file)
+  - Duplicates skipped unless you choose otherwise; automations don't run for imported rows unless you choose so
+  - **Undo** any import (deletes exactly the records it created; balances restored); saved column mappings per bank
+- Demo data: three rules (big expense → receipt task + tag, deal won → kick-off task, Saturday money check) and sample custom fields
 
 ## Phase 7: AI assistant
 Provider-agnostic (local **Ollama** or **Claude API**, selectable, **off by default**). The AI calls typed read-only query tools on your data; answers separate **"From your data"** facts from **"AI suggestion"** text. Every AI call is logged. Assisted weekly/monthly reviews and natural-language search.

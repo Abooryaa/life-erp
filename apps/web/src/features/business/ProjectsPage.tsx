@@ -19,6 +19,7 @@ import { TransactionList } from '../finance/TransactionsPage';
 import { LIFE_KEYS, TaskRow, useGoals, usePeople, type Task } from '../life/life-lib';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { EntityTags } from '../shared/TagEditor';
 import { BIZ_KEYS, ProjectHealthBadge, useOrganizations, type Project } from './biz-lib';
 
@@ -272,6 +273,7 @@ export function ProjectDetailPage() {
               <EntityTags type="project" id={p.id} tags={p.tags} invalidate={[['projects']]} />
             </div>
           </Panel>
+          <CustomFieldsPanel type="project" id={p.id} />
           <AttachmentsPanel type="project" id={p.id} workspaceId={p.workspaceId} />
           <LinksPanel type="project" id={p.id} />
         </div>

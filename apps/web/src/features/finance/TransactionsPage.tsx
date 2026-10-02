@@ -16,6 +16,7 @@ import { useWorkspace } from '../../lib/workspace';
 import { useUI } from '../../layout/ui-context';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { EntityTags, TagList } from '../shared/TagEditor';
 import { CategorySelect, FIN_KEYS, Money, useAccounts, useCategoryName, type Tx } from './fin-lib';
 
@@ -220,6 +221,7 @@ function TransactionDetail() {
             <EntityTags type="transaction" id={tx.id} tags={tx.tags} invalidate={[['finance']]} />
           </div>
           <AttachmentsPanel type="transaction" id={tx.id} workspaceId={tx.workspaceId} />
+          <CustomFieldsPanel type="transaction" id={tx.id} />
           <LinksPanel type="transaction" id={tx.id} />
         </div>
       )}

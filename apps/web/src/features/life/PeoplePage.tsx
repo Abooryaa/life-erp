@@ -16,6 +16,7 @@ import { useWorkspace } from '../../lib/workspace';
 import { useUI } from '../../layout/ui-context';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { EntityTags, TagList } from '../shared/TagEditor';
 import { LIFE_KEYS, TaskRow, type Person, type Task } from './life-lib';
 import { localToday } from './TasksPage';
@@ -276,6 +277,7 @@ export function PersonDetailPage() {
             </div>
           </Panel>
           <BusinessRoles personId={p.id} />
+          <CustomFieldsPanel type="person" id={p.id} />
           <AttachmentsPanel type="person" id={p.id} workspaceId={p.workspaceId} />
           <LinksPanel type="person" id={p.id} />
         </div>

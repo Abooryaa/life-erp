@@ -9,10 +9,19 @@ function tagsFor(type: string, id: string): string {
   return rows.map((r) => `#${r.name} ${r.name}`).join(' ');
 }
 
+/** Custom field values are searchable like the record's own text. */
+function customFieldsFor(type: string, id: string): string {
+  const rows = getSqlite()
+    .prepare("SELECT d.label, v.value FROM custom_field_values v JOIN custom_field_defs d ON d.id = v.field_id WHERE v.entity_type = ? AND v.entity_id = ? AND d.type <> 'checkbox'")
+    .all(type, id) as { label: string; value: string }[];
+  return rows.map((r) => `${r.label}: ${r.value}`).join('\n');
+}
+
 function writeDoc(type: string, doc: SearchDoc) {
+  const extra = customFieldsFor(type, doc.id);
   getSqlite()
     .prepare('INSERT INTO search_index (entity_type, entity_id, workspace_id, title, body, tags) VALUES (?, ?, ?, ?, ?, ?)')
-    .run(type, doc.id, doc.workspaceId ?? null, doc.title, doc.body ?? '', tagsFor(type, doc.id));
+    .run(type, doc.id, doc.workspaceId ?? null, doc.title, [doc.body ?? '', extra].filter(Boolean).join('\n'), tagsFor(type, doc.id));
 }
 
 export function removeFromIndex(type: string, id: string) {

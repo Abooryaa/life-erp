@@ -15,6 +15,7 @@ import { useAction, useFormState } from '../../lib/hooks';
 import { AmountInput, Money } from '../finance/fin-lib';
 import { usePeople } from '../life/life-lib';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { TagInput } from '../shared/TagEditor';
 import { BIZ_KEYS, BusinessSelect, useBusinessChoice, useOrganizations, type Opportunity, type Pipeline, type Stage } from './biz-lib';
 
@@ -345,6 +346,7 @@ export function OpportunityModal({ businessId, pipeline, oppId, defaultStageId, 
           <Field label={t('common.notes')} optional>
             <Textarea value={v.notes} onChange={(e) => form.set('notes', e.target.value)} rows={3} />
           </Field>
+          {oppId && <CustomFieldsPanel type="opportunity" id={oppId} />}
           {oppId && <LinksPanel type="opportunity" id={oppId} />}
         </div>
       )}

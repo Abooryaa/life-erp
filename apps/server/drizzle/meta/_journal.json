@@ -50,6 +50,13 @@
       "when": 1790971116533,
       "tag": "0006_insights",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1790972578989,
+      "tag": "0007_automation",
+      "breakpoints": true
     }
   ]
 }

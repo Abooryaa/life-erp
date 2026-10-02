@@ -35,6 +35,8 @@ import { snapshotNetWorth } from '../modules/insights/analytics';
 import { createAsset } from '../modules/insights/assets';
 import { saveReview } from '../modules/insights/reviews';
 import { createScenario } from '../modules/insights/scenarios';
+import { createAutomation } from '../modules/automation/engine';
+import { createDef } from '../modules/automation/custom-fields';
 
 /**
  * Demo data lives ONLY in the separate demo data folder (LifeERP-Demo), so it can
@@ -71,7 +73,41 @@ export async function seedDemo() {
   seedBusiness(ctx, { mma: mma.id, basira: basira.id });
   seedCareer(ctx);
   seedInsights(ctx, { mma: mma.id });
+  seedAutomation(ctx);
   return { userId, personal, mma, basira };
+}
+
+function seedAutomation(ctx: { userId: string }) {
+  createAutomation(ctx, {
+    name: 'Big expense → keep the receipt',
+    event: 'transaction.create',
+    conditions: [
+      { field: 'type', op: 'eq', value: 'expense' },
+      { field: 'amount', op: 'gte', value: '5000' },
+    ],
+    actions: [
+      { type: 'create_task', title: 'File the receipt: {{payee}} {{description}} ({{amount}} {{currency}})', priority: 3, dueInDays: 2, workspace: 'record' },
+      { type: 'add_tag', tag: 'receipt' },
+    ],
+  });
+  createAutomation(ctx, {
+    name: 'Deal won → kick-off task',
+    event: 'opportunity.stage',
+    conditions: [{ field: 'stageKind', op: 'eq', value: 'won' }],
+    actions: [
+      { type: 'notify', severity: 'info', title: 'Won: {{title}}', body: 'Create the project and send the contract.' },
+      { type: 'create_task', title: 'Kick-off meeting for {{title}}', priority: 2, dueInDays: 3, workspace: 'record' },
+    ],
+  });
+  createAutomation(ctx, {
+    name: 'Saturday money check',
+    event: 'schedule',
+    schedule: { frequency: 'weekly', weekday: 6, time: '10:00' },
+    actions: [{ type: 'create_task', title: 'Reconcile accounts and review spending', priority: 3, dueInDays: 0, workspace: 'none' }],
+  });
+  createDef(ctx, { entityType: 'person', label: 'Preferred contact', type: 'select', options: ['WhatsApp', 'Call', 'Email'] });
+  createDef(ctx, { entityType: 'project', label: 'Plot / unit number', type: 'text' });
+  createDef(ctx, { entityType: 'project', label: 'Site visit done', type: 'checkbox' });
 }
 
 function seedInsights(ctx: { userId: string }, ws: { mma: string }) {

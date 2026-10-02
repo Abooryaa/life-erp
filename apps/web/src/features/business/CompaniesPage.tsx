@@ -14,6 +14,7 @@ import { useAction, useDebounced, useFormState } from '../../lib/hooks';
 import { useWorkspace } from '../../lib/workspace';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { EntityTags, TagList } from '../shared/TagEditor';
 import { BIZ_KEYS, type Opportunity, type Organization, type Project, type Relation } from './biz-lib';
 import { ProjectCard } from './ProjectsPage';
@@ -202,6 +203,7 @@ export function CompanyDetailPage() {
               <EntityTags type="organization" id={o.id} tags={o.tags} invalidate={[['organizations']]} />
             </div>
           </Panel>
+          <CustomFieldsPanel type="organization" id={o.id} />
           <AttachmentsPanel type="organization" id={o.id} />
           <LinksPanel type="organization" id={o.id} />
         </div>

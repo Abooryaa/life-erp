@@ -18,6 +18,7 @@ import { localToday } from '../life/TasksPage';
 import { useOpenParam } from '../career/career-lib';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { INSIGHT_KEYS, useAxisChart } from './insights-lib';
 
 interface NetPosition {
@@ -363,6 +364,7 @@ function AssetModal({ assetId, onClose }: { assetId?: string; onClose: () => voi
           {a && <Valuations asset={a} />}
           {a && (
             <>
+              <CustomFieldsPanel type="asset" id={a.id} />
               <AttachmentsPanel type="asset" id={a.id} workspaceId={a.workspaceId} />
               <LinksPanel type="asset" id={a.id} />
             </>

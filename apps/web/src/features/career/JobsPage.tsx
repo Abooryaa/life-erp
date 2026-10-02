@@ -16,6 +16,7 @@ import { AmountInput, Money } from '../finance/fin-lib';
 import { usePeople } from '../life/life-lib';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { EntityTags } from '../shared/TagEditor';
 import { AchievementItem, AchievementModal } from './AchievementsPage';
 import { CAREER_KEYS, optLabel, useJobs, useTenure, type Employment } from './career-lib';
@@ -161,6 +162,7 @@ export function JobDetailPage() {
               <EntityTags type="employment" id={j.id} tags={j.tags ?? []} invalidate={[['career']]} />
             </div>
           </Panel>
+          <CustomFieldsPanel type="employment" id={j.id} />
           <AttachmentsPanel type="employment" id={j.id} />
           <LinksPanel type="employment" id={j.id} />
         </div>

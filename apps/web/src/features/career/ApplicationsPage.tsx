@@ -17,6 +17,7 @@ import { usePeople } from '../life/life-lib';
 import { localToday } from '../life/TasksPage';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { TagInput } from '../shared/TagEditor';
 import { CAREER_KEYS, optLabel, useOpenParam, useStatuses, type AppStatus, type Application, type Interview } from './career-lib';
 
@@ -400,6 +401,7 @@ function ApplicationModal({ statuses, appId, defaultStatusId, onClose }: { statu
           </Field>
           {appId && (
             <>
+              <CustomFieldsPanel type="job_application" id={appId} />
               <AttachmentsPanel type="job_application" id={appId} />
               <LinksPanel type="job_application" id={appId} />
             </>

@@ -43,6 +43,8 @@ import { JobDetailPage, JobsPage } from './features/career/JobsPage';
 import { AchievementsPage } from './features/career/AchievementsPage';
 import { LearningPage, SkillsPage } from './features/career/SkillsLearningPage';
 import { NetWorthPage } from './features/insights/NetWorthPage';
+import { AutomationEditPage, AutomationsPage } from './features/tools/AutomationsPage';
+import { ImportPage } from './features/tools/ImportPage';
 import { AnalyticsPage } from './features/insights/AnalyticsPage';
 import { ReviewDetailPage, ReviewsPage } from './features/insights/ReviewsPage';
 import { ScenarioDetailPage, ScenariosPage } from './features/insights/ScenariosPage';
@@ -122,6 +124,9 @@ function Private() {
               <Route path="career/skills" element={<SkillsPage />} />
               <Route path="career/learning" element={<LearningPage />} />
               <Route path="finance/net-worth" element={<NetWorthPage />} />
+              <Route path="automations" element={<AutomationsPage />} />
+              <Route path="automations/:id" element={<AutomationEditPage />} />
+              <Route path="import" element={<ImportPage />} />
               <Route path="insights" element={<AnalyticsPage />} />
               <Route path="reviews" element={<ReviewsPage />} />
               <Route path="reviews/:type/:start" element={<ReviewDetailPage />} />

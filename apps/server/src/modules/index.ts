@@ -26,7 +26,9 @@ import './insights/assets';
 import './insights/reviews';
 import './insights/scenarios';
 import './insights/jobs';
+import './automation/engine';
 import '../jobs/core-jobs';
+import { automationRoutes } from './automation/routes';
 import { businessRoutes } from './business/routes';
 import { careerRoutes } from './career/routes';
 import { financeRoutes } from './finance/routes';
@@ -34,4 +36,4 @@ import { insightsRoutes } from './insights/routes';
 import { lifeRoutes } from './life/routes';
 
 /** Route plugins of feature modules (finance, tasks, CRM, …). */
-export const moduleRoutes: FastifyPluginAsync[] = [financeRoutes, lifeRoutes, businessRoutes, careerRoutes, insightsRoutes];
+export const moduleRoutes: FastifyPluginAsync[] = [financeRoutes, lifeRoutes, businessRoutes, careerRoutes, insightsRoutes, automationRoutes];

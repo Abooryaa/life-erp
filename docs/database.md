@@ -91,8 +91,17 @@ Project money is **not stored twice**: revenue and costs are computed from `tran
 
 The dashboard layout is stored in settings (`dashboard`: ordered list of card ids, or null for the default).
 
-## Planned tables
-- **System**: `automations`, `automation_runs`, `custom_field_defs`.
+## Automation & data tables (Phase 6)
+| Table | Purpose |
+|---|---|
+| `automations` | Rule: name, enabled, event, schedule (JSON), conditions and actions (JSON), last handled schedule occurrence, last run, run count. |
+| `automation_runs` | Log per run: status (ok/error), triggering record, message. Last 200 kept per rule. |
+| `custom_field_defs` | Field per record type: label, type, options (JSON), required, order. |
+| `custom_field_values` | Value per (field, record), stored as text, validated by the field type. |
+| `imports`, `import_items` | Each import (target, file name, counts, undone date) and exactly which records it created — used by Undo. |
+| `import_presets` | Saved column mapping + options, e.g. one per bank. |
+
+Automations listen to the audit trail: every audited change is also an event. Changes made with the automation context (`ip = 'automation'`) never trigger rules.
 
 The full design is in [roadmap.md](roadmap.md).
 

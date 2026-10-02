@@ -40,4 +40,13 @@ export function audit(
       after: redact(after),
     })
     .run();
+  for (const l of listeners) l(ctx, action, entity);
+}
+
+type AuditListener = (ctx: AuditContext, action: string, entity: { type: string; id: string } | null) => void;
+const listeners: AuditListener[] = [];
+
+/** Every audited change is also an event other modules (automations) can react to. */
+export function onAudit(fn: AuditListener) {
+  listeners.push(fn);
 }

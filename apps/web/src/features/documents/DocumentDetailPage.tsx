@@ -14,6 +14,7 @@ import { useAction, useFormState } from '../../lib/hooks';
 import type { DocumentItem } from '../../lib/types';
 import { useWorkspace } from '../../lib/workspace';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { EntityTags } from '../shared/TagEditor';
 import { ExpiryBadge, useDocTypeLabel } from './doc-ui';
 
@@ -108,6 +109,7 @@ export function DocumentDetailPage() {
               <EntityTags type="document" id={doc.id} tags={doc.tags} invalidate={[['documents']]} />
             </div>
           </Panel>
+          <CustomFieldsPanel type="document" id={doc.id} />
           <LinksPanel type="document" id={doc.id} />
         </div>
       </div>

@@ -13,6 +13,7 @@ import { postOrQueue } from '../../lib/outbox';
 import { useWorkspace } from '../../lib/workspace';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { CustomFieldsPanel } from '../tools/CustomFields';
 import { TagInput } from '../shared/TagEditor';
 import { LIFE_KEYS, useGoals, usePeople, type Task } from './life-lib';
 
@@ -241,6 +242,7 @@ export function TaskFormModal({ open, onOpenChange, taskId, defaults }: { open: 
           {taskId && (
             <>
               <AttachmentsPanel type="task" id={taskId} workspaceId={v.workspaceId || null} />
+              <CustomFieldsPanel type="task" id={taskId} />
               <LinksPanel type="task" id={taskId} />
             </>
           )}

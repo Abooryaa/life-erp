@@ -138,13 +138,21 @@ export function Switch({
   return (
     <div className="flex items-start justify-between gap-4">
       <label htmlFor={id} className="flex flex-col">
-        <span className="font-medium">{label}</span>
-        {description && <span className="text-[13px] text-ink-3">{description}</span>}
+        <span id={`${id}-l`} className="font-medium">
+          {label}
+        </span>
+        {description && (
+          <span id={`${id}-d`} className="text-[13px] text-ink-3">
+            {description}
+          </span>
+        )}
       </label>
       <button
         id={id}
         type="button"
         role="switch"
+        aria-labelledby={`${id}-l`}
+        aria-describedby={description ? `${id}-d` : undefined}
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
