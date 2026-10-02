@@ -5,7 +5,7 @@ import { tasks } from '../../db/schema';
 import { audit, type AuditContext } from '../../lib/audit';
 import { notFound } from '../../lib/errors';
 import { newId, nowIso } from '../../lib/ids';
-import { registerEntity } from '../../lib/registry';
+import { assertRef, registerEntity } from '../../lib/registry';
 import { parse } from '../../lib/validate';
 import { reindexEntity } from '../search/service';
 import { getTagsFor, getTagsForMany, idsWithTag, setTagsFor } from '../tags/service';
@@ -20,6 +20,7 @@ function validate(data: ReturnType<typeof taskSchema.parse>) {
   assertWorkspace(data.workspaceId);
   assertGoal(data.goalId);
   assertPerson(data.personId);
+  assertRef('project', data.projectId, 'projectId', 'Project');
   const { tags: _t, ...row } = data;
   return {
     ...row,

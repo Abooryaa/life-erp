@@ -5,7 +5,7 @@ import { accounts, categories, debtPayments, installmentPayments, transactions }
 import { audit, type AuditContext } from '../../lib/audit';
 import { AppError, badRequest, notFound } from '../../lib/errors';
 import { newId, nowIso } from '../../lib/ids';
-import { registerEntity } from '../../lib/registry';
+import { assertRef, registerEntity } from '../../lib/registry';
 import { parse } from '../../lib/validate';
 import { reindexEntity } from '../search/service';
 import { getTagsFor, getTagsForMany, idsWithTag, setTagsFor } from '../tags/service';
@@ -53,6 +53,7 @@ function buildRow(data: ReturnType<typeof transactionSchema.parse>) {
     if (!c) throw new AppError(400, 'validation', 'Category not found', [{ path: 'categoryId', message: 'Category not found' }]);
   }
   assertWorkspace(data.workspaceId);
+  assertRef('project', data.projectId, 'projectId', 'Project');
   const amount = signedAmount(data.type, minorOf(data.amount, account.currency), data.direction);
   return {
     date: data.date,
@@ -229,6 +230,7 @@ export interface TxFilter {
   categoryId?: string;
   type?: string;
   workspaceId?: string;
+  projectId?: string;
   q?: string;
   tag?: string;
   limit?: number;
@@ -243,6 +245,7 @@ export function listTransactions(f: TxFilter) {
   if (f.categoryId) conds.push(inArray(transactions.categoryId, categorySubtree(f.categoryId)));
   if (f.type) conds.push(eq(transactions.type, f.type as TransactionRow['type']));
   if (f.workspaceId) conds.push(eq(transactions.workspaceId, f.workspaceId));
+  if (f.projectId) conds.push(eq(transactions.projectId, f.projectId));
   if (f.tag) conds.push(inArray(transactions.id, idsWithTag('transaction', f.tag)));
   if (f.q) {
     const q = `%${f.q.replace(/[%_]/g, '')}%`;

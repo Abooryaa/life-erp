@@ -10,6 +10,8 @@ export const people = sqliteTable(
     nickname: text('nickname'),
     relationship: text('relationship').notNull().default('other'),
     company: text('company'),
+    /** The company record this person works for (Phase 3); `company` stays as free text. */
+    organizationId: text('organization_id'),
     role: text('role'),
     phone: text('phone'),
     phone2: text('phone2'),

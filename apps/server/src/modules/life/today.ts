@@ -1,7 +1,7 @@
 import { addDays, daysBetween, OPEN_TASK_STATUSES } from '@life-erp/shared';
-import { and, gte, inArray, isNotNull, isNull, lte } from 'drizzle-orm';
+import { and, eq, gte, inArray, isNotNull, isNull, lte } from 'drizzle-orm';
 import { getDb } from '../../db/client';
-import { goals, tasks } from '../../db/schema';
+import { goals, milestones, projects, tasks } from '../../db/schema';
 import { upcoming } from '../finance/reports';
 import { listNotifications } from '../notifications/service';
 import { today } from './common';
@@ -44,7 +44,7 @@ export function todayView(workspaceId?: string | null) {
 }
 
 export interface CalendarItem {
-  kind: 'event' | 'task' | 'payment' | 'goal' | 'birthday' | 'followup';
+  kind: 'event' | 'task' | 'payment' | 'goal' | 'birthday' | 'followup' | 'project';
   id: string;
   title: string;
   date: string;
@@ -99,6 +99,25 @@ export function calendarFeed(from: string, to: string, workspaceId?: string | nu
   for (const g of goalRows) {
     if (ws && g.workspaceId !== ws) continue;
     items.push({ kind: 'goal', id: g.id, title: g.title, date: g.deadline!, allDay: true, workspaceId: g.workspaceId, link: `/goals/${g.id}` });
+  }
+  const projectRows = getDb()
+    .select()
+    .from(projects)
+    .where(and(isNull(projects.deletedAt), isNotNull(projects.deadline), gte(projects.deadline, from), lte(projects.deadline, to), inArray(projects.status, ['planning', 'active', 'on_hold'])))
+    .all();
+  for (const p of projectRows) {
+    if (ws && p.workspaceId !== ws) continue;
+    items.push({ kind: 'project', id: p.id, title: p.name, date: p.deadline!, allDay: true, workspaceId: p.workspaceId, link: `/projects/${p.id}` });
+  }
+  const msRows = getDb()
+    .select({ m: milestones, workspaceId: projects.workspaceId, projectName: projects.name })
+    .from(milestones)
+    .innerJoin(projects, eq(projects.id, milestones.projectId))
+    .where(and(isNull(projects.deletedAt), isNotNull(milestones.dueDate), gte(milestones.dueDate, from), lte(milestones.dueDate, to)))
+    .all();
+  for (const { m, workspaceId: wsId, projectName } of msRows) {
+    if (ws && wsId !== ws) continue;
+    items.push({ kind: 'project', id: m.id, title: `${projectName}: ${m.title}`, date: m.dueDate!, allDay: true, done: m.done, workspaceId: wsId, link: `/projects/${m.projectId}` });
   }
   for (const b of birthdaysBetween(from, to)) {
     items.push({ kind: 'birthday', id: `${b.person.id}:${b.date}`, title: b.person.fullName, date: b.date, allDay: true, link: `/people/${b.person.id}`, meta: { age: b.age } });

@@ -39,6 +39,7 @@ export interface TxFilter {
   q?: string;
   tag?: string;
   workspaceId?: string | null;
+  projectId?: string;
 }
 
 /** Reusable, paginated transaction list grouped by day. */

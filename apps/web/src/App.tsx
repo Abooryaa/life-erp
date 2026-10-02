@@ -34,6 +34,9 @@ import { CalendarPage } from './features/life/CalendarPage';
 import { GoalDetailOkrPage, GoalsOkrPage } from './features/life/GoalsOkrPage';
 import { NotesPage } from './features/life/NotesPage';
 import { PeoplePage, PersonDetailPage } from './features/life/PeoplePage';
+import { PipelinePage } from './features/business/PipelinePage';
+import { ProjectDetailPage, ProjectsPage } from './features/business/ProjectsPage';
+import { CompaniesPage, CompanyDetailPage } from './features/business/CompaniesPage';
 
 const DEFAULT_FORMAT: Omit<FormatOptions, 'locale'> = {
   digits: 'latn',
@@ -97,6 +100,11 @@ function Private() {
               <Route path="notes/:id" element={<NotesPage />} />
               <Route path="people" element={<PeoplePage />} />
               <Route path="people/:id" element={<PersonDetailPage />} />
+              <Route path="pipeline" element={<PipelinePage />} />
+              <Route path="projects" element={<ProjectsPage />} />
+              <Route path="projects/:id" element={<ProjectDetailPage />} />
+              <Route path="companies" element={<CompaniesPage />} />
+              <Route path="companies/:id" element={<CompanyDetailPage />} />
               <Route path="finance" element={<FinanceOverviewPage />} />
               <Route path="finance/transactions" element={<TransactionsPage />} />
               <Route path="finance/accounts" element={<AccountsPage />} />

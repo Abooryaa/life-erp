@@ -36,6 +36,7 @@ export interface Person {
   nickname: string | null;
   relationship: string;
   company: string | null;
+  organizationId: string | null;
   role: string | null;
   phone: string | null;
   phone2: string | null;

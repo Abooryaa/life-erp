@@ -11,6 +11,7 @@ import { useWorkspace } from '../../lib/workspace';
 import { useUI } from '../../layout/ui-context';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { LinksPanel } from '../shared/LinksPanel';
+import { BusinessOverview } from '../business/BusinessOverview';
 
 /**
  * Workspace home. Each phase adds its module panels here
@@ -55,6 +56,11 @@ export function WorkspacePage() {
           </>
         }
       />
+      {ws.kind === 'business' && (
+        <div className="mb-5">
+          <BusinessOverview workspaceId={ws.id} />
+        </div>
+      )}
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-5">
           <Panel title={t('ws.profile')}>

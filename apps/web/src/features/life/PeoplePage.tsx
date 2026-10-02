@@ -275,6 +275,7 @@ export function PersonDetailPage() {
               <EntityTags type="person" id={p.id} tags={p.tags} invalidate={[['people']]} />
             </div>
           </Panel>
+          <BusinessRoles personId={p.id} />
           <AttachmentsPanel type="person" id={p.id} workspaceId={p.workspaceId} />
           <LinksPanel type="person" id={p.id} />
         </div>
@@ -285,15 +286,42 @@ export function PersonDetailPage() {
   );
 }
 
+/** The roles this person has across your businesses (client of MMA, supplier for Basira…). */
+function BusinessRoles({ personId }: { personId: string }) {
+  const { t } = useI18n();
+  const { byId } = useWorkspace();
+  const { data = [] } = useQuery({
+    queryKey: ['relations', 'person', personId],
+    queryFn: () => api.get<{ id: string; workspaceId: string; role: string }[]>(`/api/relations?personId=${personId}`),
+  });
+  if (!data.length) return null;
+  return (
+    <Panel title={t('rel.businessRoles')} padded={false}>
+      <ul className="divide-y divide-line">
+        {data.map((r) => (
+          <li key={r.id}>
+            <Link to={`/workspaces/${r.workspaceId}`} className="flex items-center justify-between px-4 py-2.5 hover:bg-surface-2">
+              <span>{byId(r.workspaceId)?.name}</span>
+              <Badge>{t(`rel.role.${r.role}` as MessageKey)}</Badge>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+}
+
 export function PersonFormModal({ open, onOpenChange, person }: { open: boolean; onOpenChange: (o: boolean) => void; person?: Person }) {
   const { t } = useI18n();
   const navigate = useNavigate();
   const { workspaces, currentId } = useWorkspace();
+  const { data: orgs = [] } = useQuery({ queryKey: ['organizations', 'all'], queryFn: () => api.get<{ id: string; name: string }[]>('/api/organizations'), enabled: open });
   const init = () => ({
     fullName: person?.fullName ?? '',
     nickname: person?.nickname ?? '',
     relationship: person?.relationship ?? 'other',
     company: person?.company ?? '',
+    organizationId: person?.organizationId ?? '',
     role: person?.role ?? '',
     phone: person?.phone ?? '',
     phone2: person?.phone2 ?? '',
@@ -366,6 +394,16 @@ export function PersonFormModal({ open, onOpenChange, person }: { open: boolean;
           {text('phone', 'people.phone', { dir: 'ltr', type: 'tel' })}
           {text('email', 'people.email', { dir: 'ltr', type: 'email' })}
           {text('company', 'people.company')}
+          <Field label={t('people.organization')} optional error={form.errors.organizationId}>
+            <Select value={v.organizationId} onChange={(e) => form.set('organizationId', e.target.value)}>
+              <option value="">—</option>
+              {orgs.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
           {text('role', 'people.role')}
           {text('nickname', 'people.nickname')}
           {text('phone2', 'people.phone2', { dir: 'ltr', type: 'tel' })}

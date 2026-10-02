@@ -128,6 +128,7 @@ export async function financeRoutes(app: FastifyInstance) {
       categoryId: q.categoryId,
       type: q.type,
       workspaceId: q.workspaceId,
+      projectId: q.projectId,
       q: q.q,
       tag: q.tag,
       limit: q.limit ? Number(q.limit) : undefined,

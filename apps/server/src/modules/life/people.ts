@@ -11,6 +11,7 @@ import { reindexEntity } from '../search/service';
 import { getTagsFor, getTagsForMany, idsWithTag, setTagsFor } from '../tags/service';
 import { assertWorkspace } from '../workspaces/service';
 import { today } from './common';
+import { assertOrganization } from '../business/organizations';
 
 export type Person = typeof people.$inferSelect;
 const live = isNull(people.deletedAt);
@@ -64,8 +65,9 @@ export function getPerson(id: string) {
 
 function validate(data: ReturnType<typeof personSchema.parse>) {
   assertWorkspace(data.workspaceId);
+  assertOrganization(data.organizationId);
   const { tags: _t, ...row } = data;
-  return { ...row, workspaceId: data.workspaceId ?? null, birthday: data.birthday ?? null, nextFollowUp: data.nextFollowUp ?? null };
+  return { ...row, organizationId: data.organizationId ?? null, workspaceId: data.workspaceId ?? null, birthday: data.birthday ?? null, nextFollowUp: data.nextFollowUp ?? null };
 }
 
 export function createPerson(ctx: AuditContext, input: PersonInput) {

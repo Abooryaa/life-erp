@@ -114,6 +114,7 @@ export const personSchema = z.object({
   nickname: optionalText(80),
   relationship: z.enum(RELATIONSHIPS).default('other'),
   company: optionalText(160),
+  organizationId: optionalId,
   role: optionalText(160),
   phone: optionalText(40),
   phone2: optionalText(40),

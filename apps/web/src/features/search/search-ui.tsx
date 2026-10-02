@@ -1,4 +1,22 @@
-import { Building2, Calendar, CheckSquare, FileText, Folder, Landmark, NotebookPen, Receipt, Target, User, Users, type LucideIcon } from 'lucide-react';
+import {
+  Building2,
+  Calendar,
+  CalendarClock,
+  CheckSquare,
+  FileText,
+  Folder,
+  HandCoins,
+  Landmark,
+  NotebookPen,
+  PiggyBank,
+  Receipt,
+  Target,
+  TrendingUp,
+  User,
+  Users,
+  Wallet,
+  type LucideIcon,
+} from 'lucide-react';
 import type { MessageKey } from '../../i18n';
 
 const ICONS: Record<string, LucideIcon> = {
@@ -13,6 +31,11 @@ const ICONS: Record<string, LucideIcon> = {
   account: Landmark,
   goal: Target,
   event: Calendar,
+  opportunity: TrendingUp,
+  installment: CalendarClock,
+  debt: HandCoins,
+  savings_goal: PiggyBank,
+  budget: Wallet,
 };
 
 export function EntityIcon({ type }: { type: string }) {

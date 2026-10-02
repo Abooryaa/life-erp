@@ -51,6 +51,7 @@ export interface Tx {
   description: string | null;
   notes: string | null;
   workspaceId: string | null;
+  projectId: string | null;
   transferGroup: string | null;
   recurringId: string | null;
   installmentPaymentId: string | null;

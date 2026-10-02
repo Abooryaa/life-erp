@@ -16,6 +16,12 @@ import { AccountSelect, AmountInput, CategorySelect, FIN_KEYS, todayIso, useAcco
 import { minorToInput } from '@life-erp/shared';
 
 export type TxMode = 'expense' | 'income' | 'transfer' | 'refund' | 'adjustment';
+export interface TxDefaults {
+  accountId?: string;
+  categoryId?: string;
+  projectId?: string;
+  workspaceId?: string | null;
+}
 const LAST_ACCOUNT = 'lerp.lastAccount';
 
 function rememberedAccount() {
@@ -41,7 +47,7 @@ export function TransactionFormModal({
   onOpenChange: (o: boolean) => void;
   initialMode?: TxMode;
   editing?: Tx | null;
-  defaults?: { accountId?: string; categoryId?: string };
+  defaults?: TxDefaults;
 }) {
   const { t } = useI18n();
   const qc = useQueryClient();
@@ -67,9 +73,16 @@ export function TransactionFormModal({
     notes: '',
     direction: 'out' as 'in' | 'out',
     workspaceId: '',
+    projectId: '',
     tags: [] as string[],
   });
   const v = form.values;
+  const projects = useQuery({
+    queryKey: ['projects', 'all', 'open'],
+    queryFn: () => api.get<{ id: string; name: string; workspaceId: string | null }[]>('/api/projects?status=open'),
+    enabled: open,
+    staleTime: 30_000,
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -93,6 +106,7 @@ export function TransactionFormModal({
         notes: editing.notes ?? '',
         direction: editing.amount >= 0 ? 'in' : 'out',
         workspaceId: editing.workspaceId ?? '',
+        projectId: editing.projectId ?? '',
         tags: editing.tags ?? [],
       });
     } else {
@@ -111,9 +125,11 @@ export function TransactionFormModal({
         description: '',
         notes: '',
         direction: 'out',
-        workspaceId: currentId ?? '',
+        workspaceId: defaults?.workspaceId ?? currentId ?? '',
+        projectId: defaults?.projectId ?? '',
         tags: [],
       });
+      if (defaults?.projectId) setMore(true);
       setTimeout(() => amountRef.current?.focus(), 50);
     }
   }, [open, editing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -165,6 +181,7 @@ export function TransactionFormModal({
           description: v.description || null,
           notes: v.notes || null,
           workspaceId: v.workspaceId || null,
+          projectId: v.projectId || null,
           tags: v.tags,
           allowDuplicate,
         };
@@ -328,6 +345,18 @@ export function TransactionFormModal({
                   ))}
                 </Select>
               </Field>
+              {mode !== 'transfer' && (
+                <Field label={t('nav.projects')} optional error={form.errors.projectId}>
+                  <Select value={v.projectId} onChange={(e) => form.set('projectId', e.target.value)}>
+                    <option value="">—</option>
+                    {(projects.data ?? []).map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
+              )}
               <Field label={t('common.tags')} optional>
                 <TagInput value={v.tags} onChange={(tags) => form.set('tags', tags)} />
               </Field>

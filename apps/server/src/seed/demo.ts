@@ -22,6 +22,11 @@ import { addCheckin, createGoal as createLifeGoal } from '../modules/life/goals'
 import { createNote } from '../modules/life/notes';
 import { addInteraction, createPerson } from '../modules/life/people';
 import { createTask, updateTask } from '../modules/life/tasks';
+import { listPeople, updatePerson } from '../modules/life/people';
+import { addRelation, createOrganization } from '../modules/business/organizations';
+import { createOpportunity, listPipelines, updateOpportunity } from '../modules/business/pipeline';
+import { addMilestone, createProject, projectFromOpportunity, updateProject } from '../modules/business/projects';
+import { listAccounts } from '../modules/finance/accounts';
 
 /**
  * Demo data lives ONLY in the separate demo data folder (LifeERP-Demo), so it can
@@ -55,7 +60,70 @@ export async function seedDemo() {
   for (const name of ['urgent', 'followup', 'finance', 'career', 'mma', 'basira', '2026']) createTag(ctx, { name });
   seedFinance(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
   seedLife(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
+  seedBusiness(ctx, { mma: mma.id, basira: basira.id });
   return { userId, personal, mma, basira };
+}
+
+function seedBusiness(ctx: { userId: string }, ws: { mma: string; basira: string }) {
+  const today = todayLocal();
+  const supplier = createOrganization(ctx, { name: 'Cairo Gypsum Co.', type: 'supplier', industry: 'Building materials', city: 'Cairo', phone: '0225550000' });
+  const contractor = createOrganization(ctx, { name: 'Hassan Electric', type: 'supplier', industry: 'Electrical contracting' });
+  const factory = createOrganization(ctx, { name: 'Delta Garments', type: 'client', industry: 'Clothing manufacturing', city: '10th of Ramadan' });
+  addRelation(ctx, { workspaceId: ws.mma, organizationId: supplier.id, role: 'supplier' });
+  addRelation(ctx, { workspaceId: ws.mma, organizationId: contractor.id, role: 'contractor' });
+  const people = listPeople();
+  const nour = people.find((p) => p.fullName === 'Nour El-Sayed')!;
+  const omar = people.find((p) => p.fullName === 'Omar Fathy')!;
+  updatePerson(ctx, omar.id, { organizationId: factory.id });
+
+  const mmaStages = listPipelines(ws.mma)[0].stages;
+  const st = (n: string) => mmaStages.find((s) => s.name === n)!.id;
+  const villa = createOpportunity(ctx, { title: 'Villa New Cairo – full finishing', workspaceId: ws.mma, personId: nour.id, value: '1200000', stageId: st('Proposal'), expectedClose: addDays(today, 20), nextAction: 'Send revised proposal', nextActionDate: today, source: 'Instagram' });
+  createOpportunity(ctx, { title: 'Office fit-out – Maadi', workspaceId: ws.mma, value: '650000', stageId: st('Meeting'), expectedClose: addDays(today, 45), source: 'Referral' });
+  createOpportunity(ctx, { title: 'Apartment kitchen & bath', workspaceId: ws.mma, value: '180000', stageId: st('Qualified'), source: 'Instagram' });
+  createOpportunity(ctx, { title: 'Clinic interior – Zayed', workspaceId: ws.mma, value: '420000', stageId: st('Lead') });
+  const lost = createOpportunity(ctx, { title: 'Small shop renovation', workspaceId: ws.mma, value: '60000', stageId: st('Lost') });
+  updateOpportunity(ctx, lost.id, { lostReason: 'Budget too low' });
+  const won = createOpportunity(ctx, { title: 'Apartment Sheikh Zayed', workspaceId: ws.mma, value: '550000', stageId: st('Won') });
+
+  const basiraStages = listPipelines(ws.basira)[0].stages;
+  createOpportunity(ctx, { title: 'Delta Garments – Basira pilot', workspaceId: ws.basira, personId: omar.id, organizationId: factory.id, value: '60000', stageId: basiraStages.find((s) => s.name === 'Meeting')!.id, nextAction: 'Demo data health check', nextActionDate: addDays(today, 5) });
+  void villa;
+
+  // A running project from the won deal, linked to its money.
+  const prj = projectFromOpportunity(ctx, won.id);
+  updateProject(ctx, prj.id, { status: 'active', startDate: addDays(today, -40), deadline: addDays(today, 35), budget: '320000' });
+  for (const [title, due, done] of [
+    ['Demolition & site prep', addDays(today, -30), true],
+    ['Electrical & plumbing', addDays(today, -10), true],
+    ['Gypsum & ceilings', addDays(today, 4), false],
+    ['Paint & flooring', addDays(today, 20), false],
+    ['Handover', addDays(today, 35), false],
+  ] as const) {
+    addMilestone(ctx, prj.id, { title, dueDate: due, done });
+  }
+  const mmaBank = listAccounts().find((a) => a.name.startsWith('MMA Spaces'))!;
+  const cats = listCategories();
+  const cat = (n: string) => cats.find((c) => c.name === n)!.id;
+  const tx = (type: 'income' | 'expense', date: string, amount: string, category: string, payee: string) =>
+    createTransaction(ctx, { type, date, amount, accountId: mmaBank.id, categoryId: cat(category), payee, workspaceId: ws.mma, projectId: prj.id, allowDuplicate: true });
+  tx('income', addDays(today, -38), '165000', 'Business income', 'Client – 30% down payment');
+  tx('income', addDays(today, -8), '110000', 'Business income', 'Client – 2nd payment');
+  tx('expense', addDays(today, -33), '42000', 'Contractors', 'Demolition crew');
+  tx('expense', addDays(today, -20), '68000', 'Contractors', 'Hassan Electric');
+  tx('expense', addDays(today, -5), '55000', 'Materials', 'Cairo Gypsum Co.');
+  createTask(ctx, { title: 'Confirm paint colours with client', dueDate: addDays(today, 2), projectId: prj.id, workspaceId: ws.mma, personId: nour.id });
+  createTask(ctx, { title: 'Order flooring tiles', dueDate: addDays(today, 6), projectId: prj.id, workspaceId: ws.mma });
+
+  const mvp = createProject(ctx, { name: 'Basira MVP', workspaceId: ws.basira, status: 'active', startDate: addDays(today, -60), deadline: addDays(today, 60), budget: '50000' });
+  for (const [title, done] of [
+    ['Data input & validation', true],
+    ['Health check report', false],
+    ['Cleaning workflow with approvals', false],
+    ['Dashboards & forecasting', false],
+  ] as const) {
+    addMilestone(ctx, mvp.id, { title, done });
+  }
 }
 
 function seedLife(ctx: { userId: string }, ws: { personal: string; mma: string; basira: string }) {

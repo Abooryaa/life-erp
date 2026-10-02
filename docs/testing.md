@@ -58,7 +58,18 @@ Server tests create a fresh, temporary data folder per test file and drive the r
 
 Manually verified in the browser: Markdown sanitisation (an `onerror` image, a `javascript:` link and a `<script>` are all neutralised).
 
-**Total: 110 automated tests.**
+## Coverage added in Phase 3 (business & CRM)
+| Area | Tests |
+|---|---|
+| Business math | Pipeline stats (open, weighted, won, win rate, average deal); project health (on track, delayed, over budget, at risk by time and by spend, done, not started) |
+| Companies & roles | Duplicate names, people linked to companies, one contact with roles in several businesses, duplicate role refused, person-or-company rule |
+| Pipelines | Default stages per business, stage edits, stages with deals protected, won/lost stages required |
+| Deals | Lead on creation, client when won, close date, stage from another business refused, contact **and** company both linked, analytics |
+| Projects | Created from a won deal once, milestones progress, revenue/costs/refunds/profit from linked transactions, budget → over budget, invalid project link refused, calendar entries, history kept on delete |
+| Automations | Over-budget, milestone due, next-action reminders (and none for won deals) |
+| Business overview | Month and year-to-date P&L, pipeline, role counts |
+
+**Total: 125 automated tests.**
 
 ## Manual checks per release
 - `npm run build`, then `npm start`, then sign in on desktop and on a phone-sized screen.

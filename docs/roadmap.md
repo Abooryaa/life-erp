@@ -42,8 +42,17 @@ Each phase is built, tested and documented before the next one starts. Cross-cut
 - **Automations**: daily overdue/due-today summary, event reminders, follow-up → task (once), birthday reminders, goal-behind-schedule warnings
 - Command center: Today snapshot + money summary; demo data for all of the above
 
-## Phase 3: Businesses & CRM
-Business home pages (P&L, KPIs), people and organizations with roles per business (lead, prospect, client, supplier, partner…), interaction history (call, WhatsApp, email, meeting), customizable pipelines and opportunities with analytics, projects (Kanban, list, calendar, milestones, budget vs actual, revenue/expenses), business finance linked to Phase 1.
+## ✅ Phase 3: Businesses & CRM
+- **Companies** (clients, suppliers, partners, employers…) with their people, deals, projects, attachments and links
+- **Roles per business**: one person or company can be a client of MMA Spaces and a supplier for Basira at the same time (lead, prospect, client, supplier, partner, contractor, designer, team member, investor)
+- **Pipelines**: a ready-made sales pipeline per business (Lead → Contacted → Qualified → Meeting → Proposal → Negotiation → Won/Lost), fully editable (rename, reorder, add, probabilities; stages holding deals are protected)
+- **Deals**: value and currency, probability (stage default or override), expected close, next action with reminders, source, owner, lost reason; drag-and-drop board; contacts become leads automatically and clients when won; won deal → project in one click
+- **Pipeline analytics**: open value, weighted forecast, won value, win rate, average deal, value per stage
+- **Projects** (business or personal): client, status, priority, dates, contract value, cost budget, milestones (optional payment amounts), tasks, linked transactions → revenue, spent, profit, budget remaining, progress, and health (on track / at risk / delayed / over budget)
+- **Business home page**: P&L this month and year to date with margin, 12-month revenue vs costs, pipeline by stage, open projects, contacts by role, next actions, open tasks
+- Tasks and transactions can be linked to a project; project deadlines and milestones appear in the calendar
+- Automations: deal next-action reminders, project deadline (≤5 days) and delayed warnings, over-budget warnings, milestone reminders
+- Demo data: MMA Spaces pipeline, a running villa/apartment project with money and milestones, Basira MVP and pilot deal
 
 ## Phase 4: Career
 Employment history, job applications pipeline (customizable statuses, interviews, follow-ups), achievements database with CV-bullet export, skills (level/target/evidence), learning plans (courses, books, certifications).

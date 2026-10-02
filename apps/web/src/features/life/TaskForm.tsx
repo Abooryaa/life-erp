@@ -20,6 +20,7 @@ export interface TaskDefaults {
   dueDate?: string;
   goalId?: string;
   personId?: string;
+  projectId?: string;
   workspaceId?: string;
   status?: Task['status'];
 }
@@ -35,6 +36,7 @@ export function TaskFormModal({ open, onOpenChange, taskId, defaults }: { open: 
   const { workspaces, currentId } = useWorkspace();
   const { data: people = [] } = usePeople();
   const { data: goals = [] } = useGoals();
+  const { data: projects = [] } = useQuery({ queryKey: ['projects', 'all', 'all'], queryFn: () => api.get<{ id: string; name: string; status: string }[]>('/api/projects'), enabled: open, staleTime: 30_000 });
   const [del, setDel] = useState(false);
   const existing = useQuery({ queryKey: ['tasks', 'one', taskId], queryFn: () => api.get<Task>(`/api/tasks/${taskId}`), enabled: open && !!taskId });
   const blank = () => ({
@@ -48,6 +50,7 @@ export function TaskFormModal({ open, onOpenChange, taskId, defaults }: { open: 
     workspaceId: defaults?.workspaceId ?? currentId ?? '',
     goalId: defaults?.goalId ?? '',
     personId: defaults?.personId ?? '',
+    projectId: defaults?.projectId ?? '',
     assignee: '',
     recurrence: '',
     recurrenceInterval: '1',
@@ -71,6 +74,7 @@ export function TaskFormModal({ open, onOpenChange, taskId, defaults }: { open: 
         workspaceId: x.workspaceId ?? '',
         goalId: x.goalId ?? '',
         personId: x.personId ?? '',
+        projectId: x.projectId ?? '',
         assignee: x.assignee ?? '',
         recurrence: x.recurrence ?? '',
         recurrenceInterval: String(x.recurrenceInterval),
@@ -89,6 +93,7 @@ export function TaskFormModal({ open, onOpenChange, taskId, defaults }: { open: 
     workspaceId: v.workspaceId || null,
     goalId: v.goalId || null,
     personId: v.personId || null,
+    projectId: v.projectId || null,
     recurrence: v.recurrence || null,
     description: v.description || null,
     assignee: v.assignee || null,
@@ -200,6 +205,18 @@ export function TaskFormModal({ open, onOpenChange, taskId, defaults }: { open: 
                   .map((g) => (
                     <option key={g.id} value={g.id}>
                       {g.title}
+                    </option>
+                  ))}
+              </Select>
+            </Field>
+            <Field label={t('nav.projects')} optional error={form.errors.projectId}>
+              <Select value={v.projectId} onChange={(e) => form.set('projectId', e.target.value)}>
+                <option value="">—</option>
+                {projects
+                  .filter((p) => p.status !== 'completed' && p.status !== 'cancelled' || p.id === v.projectId)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
                     </option>
                   ))}
               </Select>

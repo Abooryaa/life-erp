@@ -7,6 +7,9 @@ import {
   CheckSquare,
   NotebookPen,
   Sun,
+  Building,
+  FolderKanban,
+  TrendingUp,
   Users,
   Coins,
   FileText,
@@ -55,7 +58,15 @@ export const NAV: NavSection[] = [
       { to: '/calendar', label: 'nav.calendar', icon: CalendarDays },
       { to: '/goals', label: 'nav.goalsOkr', icon: Target },
       { to: '/notes', label: 'nav.notes', icon: NotebookPen },
+    ],
+  },
+  {
+    label: 'nav.sectionBusiness',
+    items: [
+      { to: '/projects', label: 'nav.projects', icon: FolderKanban },
+      { to: '/pipeline', label: 'nav.pipeline', icon: TrendingUp },
       { to: '/people', label: 'nav.people', icon: Users },
+      { to: '/companies', label: 'nav.companies', icon: Building },
     ],
   },
   {

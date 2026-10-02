@@ -57,6 +57,18 @@ Reporting rules: income = Σ income; spending = Σ expenses − refunds; **trans
 | `people`, `interactions` | Contacts with relationship, phones, email, birthday, follow-up; interaction log (call, WhatsApp, email, meeting, message, note). |
 | `idempotency_keys` | Stored responses for retried POSTs from the phone outbox (kept 7 days). |
 
+## Business tables (Phase 3)
+| Table | Purpose |
+|---|---|
+| `organizations` | Companies (type, industry, contact details). `people.organization_id` links a person to their company. |
+| `business_relations` | Role of a person **or** a company for one business workspace (lead, client, supplier…), status, since. |
+| `pipelines`, `pipeline_stages` | One or more pipelines per business; stages with probability and kind (`open`, `won`, `lost`). |
+| `opportunities` | Deals: stage, value (minor units) + currency, probability override, expected close, next action/date, closed date, lost reason. |
+| `projects` | Business or personal projects: client, status, priority, dates, currency, cost budget, contract value, linked deal and goal. |
+| `milestones` | Project milestones with due date, done flag and optional payment amount. |
+
+Project money is **not stored twice**: revenue and costs are computed from `transactions.project_id`.
+
 ## Planned tables
 - **Assets** (Phase 5): `assets`, `asset_valuations`.
 - **Work**: `projects`, `milestones`, `tasks`, `task_comments`, `events`.

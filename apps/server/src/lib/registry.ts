@@ -1,4 +1,5 @@
 import type { EntityType } from '@life-erp/shared';
+import { AppError } from './errors';
 
 export interface ResolvedEntity {
   id: string;
@@ -43,6 +44,14 @@ export function entityDef(type: string): EntityDef | undefined {
 
 export function allEntityDefs() {
   return [...defs.values()];
+}
+
+/** Validate an optional reference to another module's record without importing that module. */
+export function assertRef(type: EntityType, id: string | null | undefined, field: string, label: string) {
+  if (!id) return;
+  if (!entityDef(type)?.exists(id)) {
+    throw new AppError(400, 'validation', `${label} not found`, [{ path: field, message: `${label} not found` }]);
+  }
 }
 
 /** Resolve a mixed list of references, grouped by type for efficiency. */

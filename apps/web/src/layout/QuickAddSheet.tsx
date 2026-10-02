@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Building2, CalendarPlus, CheckSquare, FileUp, NotebookPen, UserPlus, type LucideIcon } from 'lucide-react';
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Building2, CalendarPlus, CheckSquare, FileUp, FolderKanban, NotebookPen, UserPlus, type LucideIcon } from 'lucide-react';
 import { useCreateNote } from '../features/life/NotesPage';
 import { Modal } from '../components/ui/dialog';
 import { useI18n, type MessageKey } from '../i18n';
@@ -20,6 +20,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
   { key: 'transfer', label: 'quick.transfer', icon: ArrowLeftRight, tone: 'bg-info-soft text-info', run: (ui) => ui.openTransaction('transfer') },
   { key: 'event', label: 'quick.event', icon: CalendarPlus, tone: 'bg-warn-soft text-warn', run: (ui) => ui.openEvent() },
   { key: 'note', label: 'quick.note', icon: NotebookPen, tone: 'bg-surface-2 text-ink-2', run: (_ui, h) => h.createNote() },
+  { key: 'project', label: 'quick.project', icon: FolderKanban, tone: 'bg-pos-soft text-pos', run: (ui) => ui.openProject() },
   { key: 'contact', label: 'quick.contact', icon: UserPlus, tone: 'bg-surface-2 text-ink-2', run: (ui) => ui.openPerson() },
   { key: 'document', label: 'quick.document', icon: FileUp, tone: 'bg-surface-2 text-ink-2', run: (ui) => ui.openUpload() },
   { key: 'workspace', label: 'quick.workspace', icon: Building2, tone: 'bg-surface-2 text-ink-2', run: (ui) => ui.openWorkspaceForm() },
