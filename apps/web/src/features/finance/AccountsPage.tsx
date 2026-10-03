@@ -8,13 +8,14 @@ import { ConfirmDialog, Modal } from '../../components/ui/dialog';
 import { Badge, EmptyState, ErrorBlock, LoadingBlock, useToast } from '../../components/ui/feedback';
 import { Field, FormError, Input, Select, Switch, Textarea, TextField } from '../../components/ui/form';
 import { DataRow, PageHeader, Panel } from '../../components/ui/layout';
-import { useI18n } from '../../i18n';
+import { useI18n, type MessageKey } from '../../i18n';
 import { api } from '../../lib/api';
 import { useAction, useFormState } from '../../lib/hooks';
 import { useWorkspace } from '../../lib/workspace';
 import { AttachmentsPanel } from '../shared/AttachmentsPanel';
 import { accountTypeLabel, AmountInput, FIN_KEYS, Money, todayIso, useAccounts, useCurrencies, type Account } from './fin-lib';
 import { TransactionList } from './TransactionsPage';
+import { InterestPanel } from './InterestPanel';
 
 export function AccountsPage() {
   const { t, fmt } = useI18n();
@@ -75,6 +76,11 @@ export function AccountsPage() {
                           <p className="flex items-center gap-2 truncate font-medium">
                             {a.name}
                             {a.archivedAt && <Badge tone="warn">{t('common.archived')}</Badge>}
+                            {a.interest && (
+                              <Badge tone="pos" className="font-normal">
+                                {t('int.badge', { rate: fmt.percent(a.interest.rate / 100, 2), freq: t(`int.freq.${a.interest.frequency}` as MessageKey) })}
+                              </Badge>
+                            )}
                           </p>
                           <p className="truncate text-[12.5px] text-ink-3">
                             {[a.institution, a.reference].filter(Boolean).join(' · ')}
@@ -315,6 +321,7 @@ export function AccountDetailPage() {
             </dl>
             {a.notes && <p className="mt-3 text-[13.5px] whitespace-pre-wrap text-ink-2">{a.notes}</p>}
           </Panel>
+          <InterestPanel accountId={a.id} currency={a.currency} archived={!!a.archivedAt} />
           <AttachmentsPanel type="account" id={a.id} workspaceId={a.workspaceId} />
         </div>
       </div>

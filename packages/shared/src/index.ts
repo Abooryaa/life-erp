@@ -18,3 +18,4 @@ export * from './insights';
 export * from './csv';
 export * from './automation';
 export * from './schemas/automation';
+export * from './interest';

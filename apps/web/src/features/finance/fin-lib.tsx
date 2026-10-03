@@ -27,6 +27,8 @@ export interface Account {
   balance: number;
   liquid?: boolean;
   liability?: boolean;
+  /** Current yearly rate when the account earns interest (account list only). */
+  interest?: { rate: number; frequency: 'daily' | 'monthly' } | null;
 }
 
 export interface Category {

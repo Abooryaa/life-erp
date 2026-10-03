@@ -21,6 +21,7 @@ export interface TxExtra {
   recurringId?: string | null;
   installmentPaymentId?: string | null;
   debtPaymentId?: string | null;
+  interestThrough?: string | null;
 }
 
 function getRow(id: string): TransactionRow {

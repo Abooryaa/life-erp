@@ -88,6 +88,8 @@ export const transactions = sqliteTable(
     recurringId: text('recurring_id'),
     installmentPaymentId: text('installment_payment_id'),
     debtPaymentId: text('debt_payment_id'),
+    /** Set on interest the system credited: the last day this interest covers. */
+    interestThrough: text('interest_through'),
     ...timestamps,
     ...softDelete,
   },
@@ -261,3 +263,36 @@ export const savingsContributions = sqliteTable('savings_contributions', {
   note: text('note'),
   createdAt: timestamps.createdAt,
 });
+
+/** How an account earns interest (one row per interest-bearing account). */
+export const accountInterest = sqliteTable('account_interest', {
+  accountId: text('account_id')
+    .primaryKey()
+    .references(() => accounts.id),
+  enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
+  frequency: text('frequency').notNull(),
+  method: text('method').notNull().default('daily_balance'),
+  creditDay: integer('credit_day').notNull().default(31),
+  categoryId: text('category_id')
+    .notNull()
+    .references(() => categories.id),
+  startDate: text('start_date').notNull(),
+  /** Last day already credited (null = nothing credited yet). */
+  accruedThrough: text('accrued_through'),
+  ...timestamps,
+});
+
+/** Yearly rate history: the rate applies from `effectiveFrom` until the next entry. */
+export const interestRates = sqliteTable(
+  'interest_rates',
+  {
+    id: text('id').primaryKey(),
+    accountId: text('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    effectiveFrom: text('effective_from').notNull(),
+    annualRate: real('annual_rate').notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (t) => [uniqueIndex('interest_rates_uq').on(t.accountId, t.effectiveFrom)],
+);

@@ -18,6 +18,7 @@ Each phase is built, tested and documented before the next one starts. Cross-cut
 
 ## ✅ Phase 1: Personal finance
 - Accounts: bank, cash, savings, credit card, e-wallet, investment, loan, **gam'eya**, other. Opening balances, computed balances, archive, and **reconciliation** (adjust to the real balance without touching income/expense)
+- **Interest-bearing accounts** (added after Phase 6): yearly rate with **rate history** (each day uses the rate valid that day), credited **daily** (compounds) or **monthly** on a chosen day (31 = month end) calculated on each day's balance or on the lowest balance; posted automatically as income ("Bank interest") with catch-up for days the laptop was off, never twice; notification on monthly credits; earned this month/year, amount building up for the next credit, estimate per month; **Recalculate from a date** after backdated transactions or rate changes; pause or stop (credited interest stays). 365-day year; negative balances earn nothing
 - Multi-currency: per-account currency, exchange-rate table, cross rates, custom currencies. Totals that can't be converted are **reported, never guessed**
 - Categories and subcategories (EN/AR names, colours), seeded defaults, archive vs delete protection
 - Transactions: income, expense, **transfer** (two linked legs, never counted as income/expense; cross-currency), refund, adjustment. Tags, receipts as attachments, links, **duplicate detection**, search, filters, totals

@@ -35,6 +35,9 @@ SQLite 3 (WAL mode, foreign keys on), file `<data>\db\life.sqlite`. Schema code:
 | Table | Purpose |
 |---|---|
 | `accounts` | Where money lives. `opening_balance` (minor units) + `currency`; balance = opening + Σ live transactions (never stored). |
+| `account_interest` | Interest terms of an account: daily/monthly, method (daily balance / lowest balance), credit day, income category, start date, `accrued_through` (last day credited). |
+| `interest_rates` | Yearly rate history per account (`effective_from`, `annual_rate` %). |
+| `transactions.interest_through` | Set on interest the system credited: the last day it covers (used for totals and recalculation). |
 | `categories` | Income/expense tree (one level of subcategories), `name` + `name_ar`. |
 | `transactions` | `amount` = **signed effect on the account** in its own minor units. `type` ∈ income, expense, transfer, refund, adjustment. A transfer = two rows sharing `transfer_group`. Optional links to `recurring_id`, `installment_payment_id`, `debt_payment_id`. |
 | `currencies` | Extra currencies beyond the built-in list (code, minor-unit digits). |

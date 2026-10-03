@@ -9,6 +9,7 @@ import './finance/debts';
 import './finance/budgets';
 import './finance/goals';
 import './finance/jobs';
+import './finance/interest';
 import './life/people';
 import './life/tasks';
 import './life/events';

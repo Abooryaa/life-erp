@@ -37,6 +37,7 @@ import { saveReview } from '../modules/insights/reviews';
 import { createScenario } from '../modules/insights/scenarios';
 import { createAutomation } from '../modules/automation/engine';
 import { createDef } from '../modules/automation/custom-fields';
+import { addRate, recalculateInterest, setupInterest } from '../modules/finance/interest';
 
 /**
  * Demo data lives ONLY in the separate demo data folder (LifeERP-Demo), so it can
@@ -74,7 +75,20 @@ export async function seedDemo() {
   seedCareer(ctx);
   seedInsights(ctx, { mma: mma.id });
   seedAutomation(ctx);
+  seedInterest(ctx, { personal: personal.id });
   return { userId, personal, mma, basira };
+}
+
+function seedInterest(ctx: { userId: string }, ws: { personal: string }) {
+  const today = todayLocal();
+  const start = `${addMonths(today, -3).slice(0, 7)}-01`;
+  // A savings account credited monthly on the last day, and one credited daily.
+  const usd = listAccounts().find((a) => a.name === 'USD savings');
+  if (usd) setupInterest(ctx, usd.id, { frequency: 'monthly', method: 'daily_balance', creditDay: 31, startDate: start, annualRate: 4.5 });
+  const daily = createAccount(ctx, { name: 'Daily saver – NBE', type: 'savings', currency: 'EGP', openingBalance: '150000', openingDate: start, institution: 'National Bank of Egypt', workspaceId: ws.personal });
+  setupInterest(ctx, daily.id, { frequency: 'daily', startDate: start, annualRate: 21 });
+  addRate(ctx, daily.id, { effectiveFrom: addDays(start, 45), annualRate: 19.5 });
+  recalculateInterest(ctx, daily.id, addDays(start, 45));
 }
 
 function seedAutomation(ctx: { userId: string }) {

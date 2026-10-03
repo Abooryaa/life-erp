@@ -98,7 +98,18 @@ Manually verified in the browser: Markdown sanitisation (an `onerror` image, a `
 | Custom fields | Per-type definitions, duplicate names, select needs options, value validation (choice, number, required), search finds values, options/type in use protected |
 | Import | Analyze (delimiter, mapping, decimal comma, split amounts); preview saves nothing, row errors, duplicates within the file; account required; commit; re-import flags everything as duplicate; history; undo restores balances and can't run twice; JSON contacts with loose values, warnings and tags; automations only when asked; saved mappings |
 
-**Total: 177 automated tests** (49 shared, 123 server, 5 web).
+## Coverage added for interest-bearing accounts
+| Area | Tests |
+|---|---|
+| Interest maths | Rate valid per day, daily compounding, deposits from their day, negative balances, rounding to zero, monthly on daily balances vs lowest balance, rate change mid-month, credit dates incl. day 31 |
+| Daily accounts | Credits every finished day with catch-up, exact balance, never twice, backdated rate + recalculate, withdrawal stops interest |
+| Monthly accounts | Credit dates and amounts, period end marked, compounding month to month, notifications, lowest-balance method |
+| Safety | Cards/loans refused, rate required and ≤ 100%, income category only, pause, stop keeps credited interest, current rate in the account list |
+
+## Coverage added in Phase 7 (AI assistant, in progress)
+Opt-in, readiness checks (model chosen/installed, key, consent), real HTTP tool loops against fake Ollama and Claude servers, switched-off areas not offered, encrypted key never returned or stored in plain text, unusable key after master-key change, review suggestions, activity log.
+
+**Total: 201 automated tests** (55 shared, 141 server, 5 web).
 
 ## Manual checks per release
 - `npm run build`, then `npm start`, then sign in on desktop and on a phone-sized screen.

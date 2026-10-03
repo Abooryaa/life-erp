@@ -17,6 +17,15 @@ import { createRecurring, deleteRecurring, getRecurring, listRecurring, postRecu
 import { categoryBreakdown, monthlySeries, netPosition, upcoming } from './reports';
 import { createTransaction, createTransfer, deleteTransaction, frequentCategories, getTransaction, listTransactions, updateTransaction } from './transactions';
 import { minorOf } from './currency';
+import {
+  addRate as addInterestRate,
+  deleteRate as deleteInterestRate,
+  getInterest,
+  ratesByAccount,
+  recalculateInterest,
+  removeInterest,
+  setupInterest,
+} from './interest';
 
 type Id = { Params: { id: string } };
 const monthRe = /^\d{4}-\d{2}$/;
@@ -73,7 +82,23 @@ export async function financeRoutes(app: FastifyInstance) {
   });
 
   // ---------- accounts ----------
-  app.get<{ Querystring: Q }>(`${P}/accounts`, async (req) => listAccounts({ includeArchived: req.query.archived === '1', workspaceId: req.query.workspaceId || null }));
+  app.get<{ Querystring: Q }>(`${P}/accounts`, async (req) => {
+    const rates = ratesByAccount();
+    return listAccounts({ includeArchived: req.query.archived === '1', workspaceId: req.query.workspaceId || null }).map((a) => ({ ...a, interest: rates.get(a.id) ?? null }));
+  });
+  // ---------- interest ----------
+  app.get<Id>(`${P}/accounts/:id/interest`, async (req) => getInterest(req.params.id));
+  app.put<Id>(`${P}/accounts/:id/interest`, async (req) => setupInterest(ctxOf(req), req.params.id, req.body as never));
+  app.delete<Id>(`${P}/accounts/:id/interest`, async (req) => {
+    removeInterest(ctxOf(req), req.params.id);
+    return { ok: true };
+  });
+  app.post<Id>(`${P}/accounts/:id/interest/rates`, async (req) => addInterestRate(ctxOf(req), req.params.id, req.body));
+  app.delete<{ Params: { id: string; rid: string } }>(`${P}/accounts/:id/interest/rates/:rid`, async (req) => deleteInterestRate(ctxOf(req), req.params.id, req.params.rid));
+  app.post<Id>(`${P}/accounts/:id/interest/recalculate`, async (req) => {
+    const { from } = parse(z.object({ from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use the format YYYY-MM-DD') }), req.body);
+    return recalculateInterest(ctxOf(req), req.params.id, from);
+  });
   app.get<Id>(`${P}/accounts/:id`, async (req) => getAccount(req.params.id));
   app.post(`${P}/accounts`, async (req) => createAccount(ctxOf(req), req.body as never));
   app.put<Id>(`${P}/accounts/:id`, async (req) => updateAccount(ctxOf(req), req.params.id, req.body as never));
