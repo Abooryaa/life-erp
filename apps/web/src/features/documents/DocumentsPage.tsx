@@ -85,7 +85,7 @@ export function DocumentsPage() {
         </div>
       ) : (
         <div className="overflow-hidden rounded-card border border-line bg-surface shadow-card">
-          <div className="hidden grid-cols-[minmax(0,1fr)_140px_160px_100px_110px] gap-4 border-b border-line bg-surface-2 px-4 py-2 text-[12px] font-semibold text-ink-3 uppercase md:grid">
+          <div className="hidden grid-cols-[minmax(0,1fr)_140px_160px_100px_110px] gap-4 border-b border-line bg-surface-2 px-4 py-2 text-[12px] font-semibold text-ink-3 uppercase xl:grid">
             <span>{t('common.name')}</span>
             <span>{t('common.type')}</span>
             <span>{t('common.workspace')}</span>
@@ -99,7 +99,7 @@ export function DocumentsPage() {
                 <li key={d.id}>
                   <Link
                     to={`/documents/${d.id}`}
-                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 hover:bg-surface-2 md:grid-cols-[minmax(0,1fr)_140px_160px_100px_110px]"
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 hover:bg-surface-2 xl:grid-cols-[minmax(0,1fr)_140px_160px_100px_110px]"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <DocIcon mime={d.mime} />
@@ -109,14 +109,15 @@ export function DocumentsPage() {
                           <ExpiryBadge expiresOn={d.expiresOn} />
                         </p>
                         <p className="flex flex-wrap items-center gap-2 text-[12.5px] text-ink-3">
+                          <span className="xl:hidden">{typeLabel(d.docType)} ·</span>
                           <span className="truncate">{d.originalName}</span>
                           <TagList tags={d.tags} />
                         </p>
                       </div>
                     </div>
-                    <span className="text-[12.5px] text-ink-3 md:hidden">{fmt.date(d.createdAt)}</span>
-                    <span className="hidden text-[13px] text-ink-2 md:block">{typeLabel(d.docType)}</span>
-                    <span className="hidden min-w-0 items-center gap-2 text-[13px] text-ink-2 md:flex">
+                    <span className="text-[12.5px] text-ink-3 xl:hidden">{fmt.date(d.createdAt)}</span>
+                    <span className="hidden text-[13px] text-ink-2 xl:block">{typeLabel(d.docType)}</span>
+                    <span className="hidden min-w-0 items-center gap-2 text-[13px] text-ink-2 xl:flex">
                       {ws && (
                         <>
                           <Dot color={ws.color} />
@@ -124,8 +125,8 @@ export function DocumentsPage() {
                         </>
                       )}
                     </span>
-                    <span className="num hidden text-end text-[13px] text-ink-2 md:block">{fmt.bytes(d.size)}</span>
-                    <span className="num hidden text-end text-[13px] text-ink-2 md:block">{fmt.date(d.createdAt)}</span>
+                    <span className="num hidden text-end text-[13px] text-ink-2 xl:block">{fmt.bytes(d.size)}</span>
+                    <span className="num hidden text-end text-[13px] text-ink-2 xl:block">{fmt.date(d.createdAt)}</span>
                   </Link>
                 </li>
               );

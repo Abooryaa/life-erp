@@ -38,6 +38,7 @@ import { createScenario } from '../modules/insights/scenarios';
 import { createAutomation } from '../modules/automation/engine';
 import { createDef } from '../modules/automation/custom-fields';
 import { addRate, recalculateInterest, setupInterest } from '../modules/finance/interest';
+import { seedDemoExtras } from './demo-extras';
 
 /**
  * Demo data lives ONLY in the separate demo data folder (LifeERP-Demo), so it can
@@ -76,7 +77,23 @@ export async function seedDemo() {
   seedInsights(ctx, { mma: mma.id });
   seedAutomation(ctx);
   seedInterest(ctx, { personal: personal.id });
+  await seedDemoExtras(ctx, { personal: personal.id, mma: mma.id, basira: basira.id });
+  seedNetWorthHistory();
   return { userId, personal, mma, basira };
+}
+
+/** Demo only: a made-up monthly history ending at today's real net worth, so the trend chart has a line. */
+function seedNetWorthHistory() {
+  const today = todayLocal();
+  const now = snapshotNetWorth(today);
+  for (let i = 1; i <= 12; i++) {
+    const drift = 1 - i * 0.012;
+    getDb()
+      .insert(netWorthSnapshots)
+      .values({ date: addDays(today, -30 * i), base: now.base, liquid: Math.round(now.liquid * drift), investments: now.investments, otherAssets: now.otherAssets, liabilities: now.liabilities, netWorth: Math.round(now.netWorth * drift) })
+      .onConflictDoNothing()
+      .run();
+  }
 }
 
 function seedInterest(ctx: { userId: string }, ws: { personal: string }) {
@@ -130,16 +147,6 @@ function seedInsights(ctx: { userId: string }, ws: { mma: string }) {
   createAsset(ctx, { name: 'Car – Hyundai Elantra', type: 'vehicle', purchaseDate: '2022-02-10', purchasePrice: '420,000', currentValue: '610,000' });
   createAsset(ctx, { name: 'Gold savings', type: 'gold', liquidity: 'liquid', quantity: 60, unit: 'g', purchasePrice: '150,000', purchaseDate: '2023-01-15', currentValue: '255,000' });
   createAsset(ctx, { name: 'Site equipment', type: 'equipment', workspaceId: ws.mma, purchaseDate: '2024-03-01', purchasePrice: '95,000', currentValue: '70,000' });
-  // Demo only: a made-up history so the net-worth chart has something to show.
-  const now = snapshotNetWorth(today);
-  for (let i = 1; i <= 11; i++) {
-    const d = addDays(today, -30 * i);
-    const drift = 1 - i * 0.012;
-    getDb()
-      .insert(netWorthSnapshots)
-      .values({ date: d, base: now.base, liquid: Math.round(now.liquid * drift), investments: now.investments, otherAssets: now.otherAssets, liabilities: now.liabilities, netWorth: Math.round(now.netWorth * drift) })
-      .run();
-  }
   createScenario(ctx, {
     name: 'Leave job to run MMA full-time',
     horizonMonths: 12,
@@ -318,23 +325,28 @@ function seedFinance(ctx: { userId: string }, ws: { personal: string; mma: strin
   const today = todayLocal();
   const cats = listCategories();
   const cat = (name: string) => cats.find((c) => c.name === name)!.id;
-  const start = addMonths(today, -3);
+  // A full year of history, so analytics, budgets, reviews and scenarios have real numbers to work with.
+  const start = addMonths(today, -12);
 
+  setRate(ctx, { currency: 'USD', rate: 48.9, date: addDays(start, -1) });
+  setRate(ctx, { currency: 'USD', rate: 49.4, date: addDays(today, -200) });
   setRate(ctx, { currency: 'USD', rate: 48.6, date: addDays(today, -90) });
   setRate(ctx, { currency: 'USD', rate: 48.3, date: addDays(today, -10) });
 
-  const bank = createAccount(ctx, { name: 'CIB Current', type: 'bank', currency: 'EGP', openingBalance: '85000', openingDate: start, institution: 'CIB', reference: '•••• 4821', workspaceId: ws.personal });
+  const bank = createAccount(ctx, { name: 'CIB Current', type: 'bank', currency: 'EGP', openingBalance: '22000', openingDate: start, institution: 'CIB', reference: '•••• 4821', workspaceId: ws.personal });
   const cash = createAccount(ctx, { name: 'Wallet cash', type: 'cash', currency: 'EGP', openingBalance: '3000', openingDate: start, workspaceId: ws.personal });
   const vf = createAccount(ctx, { name: 'Vodafone Cash', type: 'ewallet', currency: 'EGP', openingBalance: '1200', openingDate: start, workspaceId: ws.personal });
   const card = createAccount(ctx, { name: 'Visa credit card', type: 'credit_card', currency: 'EGP', openingBalance: '-4500', openingDate: start, institution: 'NBE', creditLimit: '60000', workspaceId: ws.personal });
   const usd = createAccount(ctx, { name: 'USD savings', type: 'savings', currency: 'USD', openingBalance: '1500', openingDate: start, institution: 'CIB', workspaceId: ws.personal });
-  const mmaBank = createAccount(ctx, { name: 'MMA Spaces – QNB', type: 'bank', currency: 'EGP', openingBalance: '120000', openingDate: start, institution: 'QNB', workspaceId: ws.mma });
+  const mmaBank = createAccount(ctx, { name: 'MMA Spaces – QNB', type: 'bank', currency: 'EGP', openingBalance: '45000', openingDate: start, institution: 'QNB', workspaceId: ws.mma });
 
   const tx = (type: 'income' | 'expense', date: string, amount: string, accountId: string, category: string, payee: string, workspaceId = ws.personal) =>
     createTransaction(ctx, { type, date, amount, accountId, categoryId: cat(category), payee, workspaceId, allowDuplicate: true });
 
-  // Three months of realistic personal activity.
-  for (let m = 3; m >= 0; m--) {
+  // Seasonal swings (index = months ago) so the charts look like a real year, not a straight line.
+  const wave = [1, 0.92, 1.08, 1.2, 0.85, 1, 1.15, 0.9, 1.05, 1.3, 0.8, 0.95, 1.1];
+  const n = (v: number, m: number) => String(Math.round((v * wave[m]) / 10) * 10);
+  for (let m = 12; m >= 0; m--) {
     const base = addMonths(today, -m);
     const d = (day: number) => {
       const s = `${base.slice(0, 7)}-${String(day).padStart(2, '0')}`;
@@ -344,31 +356,51 @@ function seedFinance(ctx: { userId: string }, ws: { personal: string; mma: strin
       const date = d(day);
       if (date && date >= start) fn(date);
     };
-    at(1, (date) => tx('income', date, '45000', bank.id, 'Salary', 'Employer'));
-    at(5, (date) => tx('expense', date, '12000', bank.id, 'Rent', 'Landlord'));
+    // The salary rose 3 months ago (promotion); rent went up this year.
+    at(1, (date) => tx('income', date, m > 3 ? '38000' : '45000', bank.id, 'Salary', 'Nile Retail Group'));
+    at(5, (date) => tx('expense', date, m > 6 ? '11000' : '12000', bank.id, 'Rent', 'Landlord'));
     at(10, (date) => tx('expense', date, '450', vf.id, 'Mobile & internet', 'WE Internet'));
-    at(3, (date) => tx('expense', date, String(1850 + m * 120), card.id, 'Groceries', 'Carrefour'));
-    at(11, (date) => tx('expense', date, String(1420 + m * 75), card.id, 'Groceries', 'Seoudi Market'));
-    at(19, (date) => tx('expense', date, String(1630 - m * 40), cash.id, 'Groceries', 'Kazyon'));
-    at(7, (date) => tx('expense', date, '640', card.id, 'Restaurants', 'Zooba'));
-    at(16, (date) => tx('expense', date, '980', card.id, 'Restaurants', 'Sachi'));
+    at(14, (date) => tx('expense', date, '380', bank.id, 'Utilities', 'Electricity – North Cairo'));
+    at(3, (date) => tx('expense', date, n(1850, m), card.id, 'Groceries', 'Carrefour'));
+    at(11, (date) => tx('expense', date, n(1420, m), card.id, 'Groceries', 'Seoudi Market'));
+    at(19, (date) => tx('expense', date, n(1630, m), cash.id, 'Groceries', 'Kazyon'));
+    at(7, (date) => tx('expense', date, n(640, m), card.id, 'Restaurants', 'Zooba'));
+    at(16, (date) => tx('expense', date, n(980, m), card.id, 'Restaurants', 'Sachi'));
+    at(23, (date) => tx('expense', date, n(260, m), cash.id, 'Coffee', 'Cilantro'));
     at(8, (date) => tx('expense', date, '900', bank.id, 'Fuel', 'Total Energies'));
     at(22, (date) => tx('expense', date, '850', bank.id, 'Fuel', 'Mobil'));
-    at(13, (date) => tx('expense', date, String(310 + m * 30), vf.id, 'Ride-hailing', 'Uber'));
+    at(13, (date) => tx('expense', date, n(340, m), vf.id, 'Ride-hailing', 'Uber'));
     at(15, (date) => tx('expense', date, '800', bank.id, 'Fitness', 'Gold’s Gym'));
     at(20, (date) => tx('expense', date, '2000', bank.id, 'Family support', 'Family'));
-    at(24, (date) => tx('expense', date, String(1200 + m * 400), card.id, 'Clothes', 'Zara'));
-    at(26, (date) => createTransfer(ctx, { date, fromAccountId: bank.id, toAccountId: card.id, amount: '5000', description: 'Card payment' }));
-    at(2, (date) => createTransfer(ctx, { date, fromAccountId: bank.id, toAccountId: cash.id, amount: '2000', description: 'ATM withdrawal' }));
+    at(24, (date) => tx('expense', date, n(1400, m), card.id, 'Clothes', 'Zara'));
+    at(27, (date) => createTransaction(ctx, { type: 'expense', date, amount: '15.99', accountId: usd.id, categoryId: cat('Subscriptions'), payee: 'Netflix', workspaceId: ws.personal, allowDuplicate: true }));
+    at(26, (date) => createTransfer(ctx, { date, fromAccountId: bank.id, toAccountId: card.id, amount: '6500', description: 'Card payment' }));
+    at(2, (date) => createTransfer(ctx, { date, fromAccountId: bank.id, toAccountId: cash.id, amount: '2500', description: 'ATM withdrawal' }));
+    at(9, (date) => createTransfer(ctx, { date, fromAccountId: bank.id, toAccountId: vf.id, amount: '1500', description: 'Vodafone Cash top-up' }));
     // MMA Spaces business activity.
-    at(6, (date) => tx('income', date, String(85000 + m * 5000), mmaBank.id, 'Business income', 'Villa client – New Cairo', ws.mma));
-    at(9, (date) => tx('expense', date, String(28000 + m * 2000), mmaBank.id, 'Materials', 'Gypsum & paint supplier', ws.mma));
-    at(17, (date) => tx('expense', date, '22000', mmaBank.id, 'Contractors', 'Electrical contractor', ws.mma));
+    at(6, (date) => tx('income', date, n(90000, m), mmaBank.id, 'Business income', 'Client payments', ws.mma));
+    at(9, (date) => tx('expense', date, n(30000, m), mmaBank.id, 'Materials', 'Gypsum & paint supplier', ws.mma));
+    at(17, (date) => tx('expense', date, n(22000, m), mmaBank.id, 'Contractors', 'Electrical contractor', ws.mma));
     at(21, (date) => tx('expense', date, '3500', mmaBank.id, 'Marketing', 'Instagram ads', ws.mma));
-    // Basira.
+    at(28, (date) => tx('expense', date, n(28000, m), mmaBank.id, 'Contractors', 'Site team wages', ws.mma));
+    // Basira: tooling every month; first pilot fees in the last two months.
     at(12, (date) => tx('expense', date, '1450', bank.id, 'Software', 'Cloud & tools', ws.basira));
+    if (m <= 1) at(18, (date) => tx('income', date, '15000', bank.id, 'Business income', 'Pilot setup fee – Delta Garments', ws.basira));
   }
-  createTransaction(ctx, { type: 'expense', date: addDays(today, -4), amount: '15.99', accountId: usd.id, categoryId: cat('Subscriptions'), payee: 'Netflix', workspaceId: ws.personal, allowDuplicate: true });
+  // One-off events of the year.
+  const once = (monthsAgo: number, day: number, type: 'income' | 'expense', amount: string, accountId: string, category: string, payee: string, workspaceId = ws.personal) => {
+    const date = `${addMonths(today, -monthsAgo).slice(0, 7)}-${String(day).padStart(2, '0')}`;
+    if (date >= start && date <= today) tx(type, date, amount, accountId, category, payee, workspaceId);
+  };
+  once(10, 14, 'expense', '18500', card.id, 'Travel', 'Sahel weekend – Marassi');
+  once(8, 9, 'expense', '9500', bank.id, 'Car maintenance', 'Car insurance – AXA');
+  once(7, 21, 'expense', '4200', bank.id, 'Car maintenance', 'Toyota service centre');
+  once(5, 4, 'expense', '1800', bank.id, 'Doctor', 'Dr. Ahmed – dentist');
+  once(5, 6, 'expense', '650', cash.id, 'Pharmacy', 'El Ezaby Pharmacy');
+  once(4, 28, 'income', '30000', bank.id, 'Salary', 'Nile Retail Group – annual bonus');
+  once(3, 18, 'expense', '4000', cash.id, 'Gifts', 'Eid gifts');
+  once(2, 11, 'expense', '7600', card.id, 'Electronics', 'B.TECH – air purifier');
+  once(6, 25, 'income', '12000', bank.id, 'Freelance', 'Dashboard for a friend’s shop');
 
   // Recurring items (salary is recorded automatically; the rest remind you).
   createRecurring(ctx, { name: 'Salary', type: 'income', amount: '45000', accountId: bank.id, categoryId: cat('Salary'), payee: 'Employer', startDate: addMonths(`${today.slice(0, 7)}-01`, 1), autoPost: true, workspaceId: ws.personal }, today);
